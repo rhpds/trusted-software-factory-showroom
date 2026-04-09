@@ -1,0 +1,510 @@
+= Module 2: Installing {TSFShortName}
+
+== Learning objectives
+
+By the end of this module, you will be able to:
+
+* Run the {TSFShortName} installer container with Podman
+* Login to your {OCPName} cluster from within the container
+* Create the cluster configuration using the {TSFCli} CLI
+* Configure GitHub or GitLab integration
+* Configure Quay registry integration
+* Deploy all {TSFShortName} components using Helm
+
+== Introduction
+
+Now that your environment is prepared, you're ready to install {TSFShortName}. The installation uses a containerized installer that includes the `{TSFCli}` CLI tool. This tool orchestrates the deployment of nine Helm charts that create all the components of the secure software supply chain.
+
+In this module, you will run the installer, configure integrations, and deploy {TSFShortName} to your cluster.
+
+== Exercise 1: Start the installer container
+
+In this exercise, you will pull and run the {TSFShortName} installer container.
+
+=== Run the installer
+
+. On your local workstation, ensure you're in the directory containing your `tsf.env` file.
+
+. Run the installer container with Podman.
++
+[source,role="execute"]
+----
+podman run -it --rm --env-file tsf.env \
+  --entrypoint bash -p 8228:8228 --pull always \
+  {TSFInstallerImage} --login
+----
++
+This command:
+* Pulls the latest installer image
+* Loads environment variables from `tsf.env`
+* Exposes port 8228 for GitHub App workflows
+* Starts an interactive bash shell inside the container
+
+=== Verify container is running
+
+You should see output indicating the image is being pulled, followed by a bash prompt inside the container:
+
+----
+Trying to pull quay.io/redhat-ads/tsf-cli:unstable...
+Getting image source signatures
+...
+bash-5.1$
+----
+
+=== Verify
+
+✓ Installer container downloaded successfully +
+✓ Interactive bash shell is running +
+✓ Environment variables from tsf.env are loaded +
+
+[TIP]
+====
+The `--pull always` flag ensures you get the latest installer version. The image is updated frequently.
+====
+
+== Exercise 2: Login to the cluster
+
+In this exercise, you will authenticate to your {OCPName} cluster from within the installer container.
+
+=== Login with oc CLI
+
+. Inside the container, login to your cluster using the {OCPCli} CLI.
++
+[source,role="execute"]
+----
+oc login "$OCP__API_ENDPOINT" \
+  --username "$OCP__USERNAME" \
+  --password "$OCP__PASSWORD"
+----
++
+The environment variables from `tsf.env` are automatically available.
+
+. Verify you are logged in.
++
+[source,role="execute"]
+----
+oc whoami
+----
++
+Expected output:
++
+----
+kubeadmin
+----
+
+=== Verify cluster connection
+
+. Check your current context.
++
+[source,role="execute"]
+----
+oc whoami --show-server
+----
++
+This should display your cluster API endpoint.
+
+=== Verify
+
+✓ Successfully authenticated to {OCPName} cluster +
+✓ Cluster-admin user confirmed +
+✓ Cluster API endpoint accessible +
+
+== Exercise 3: Create the cluster configuration
+
+In this exercise, you will create the {TSFShortName} configuration using the `{TSFCli}` CLI.
+
+=== Create configuration
+
+. Run the `{TSFCli} config` command to create the configuration.
++
+[source,role="execute"]
+----
+tsf config --create
+----
++
+This command creates a ConfigMap named `tsf-config` in the `tsf` namespace containing component definitions and subscription settings.
++
+Expected output:
++
+----
+Creating namespace tsf...
+Creating ConfigMap tsf-config...
+Configuration created successfully.
+----
+
+. Verify the configuration was created.
++
+[source,role="execute"]
+----
+oc get configmap tsf-config -n tsf -o yaml
+----
++
+You should see a ConfigMap containing component definitions for Cert-Manager, Konflux, Keycloak, Pipelines, RHTAS, RHTPA, Quay, and Storage.
+
+=== Check for existing Cert-Manager
+
+. Check if Cert-Manager is already installed on your cluster.
++
+[source,role="execute"]
+----
+oc get subscription openshift-cert-manager-operator -n cert-manager-operator 2>/dev/null || echo "Cert-Manager not found"
+----
+
+. If Cert-Manager already exists, you need to disable the managed subscription.
++
+Edit the ConfigMap:
++
+[source,role="execute"]
+----
+oc edit configmap tsf-config -n tsf
+----
++
+Find the Cert-Manager component and change `manageSubscription: true` to `manageSubscription: false`.
+
+. Verify the change.
++
+[source,role="execute"]
+----
+oc get configmap tsf-config -n tsf -o yaml | grep -A5 cert-manager
+----
+
+=== Verify
+
+✓ ConfigMap `tsf-config` created in `tsf` namespace +
+✓ Configuration contains all component definitions +
+✓ Cert-Manager subscription conflict resolved (if applicable) +
+
+== Exercise 4: Configure GitHub integration
+
+[NOTE]
+====
+Complete this exercise if you are using GitHub. Skip to Exercise 5 if using GitLab.
+====
+
+In this exercise, you will create a GitHub App for integration with {TSFShortName}.
+
+=== Create GitHub App
+
+. Inside the installer container, run the GitHub integration command.
++
+[source,role="execute"]
+----
+tsf integration github --create --org "$GITHUB__ORG" "techcorp-tsf-app"
+----
++
+Replace `techcorp-tsf-app` with a name for your GitHub App.
++
+The command outputs a localhost URL:
++
+----
+Please open http://localhost:8228 in your browser to configure the GitHub App.
+----
+
+. On your local workstation (outside the container), open a web browser and navigate to:
++
+----
+http://localhost:8228
+----
++
+[TIP]
+====
+Port 8228 was exposed when you started the container with `-p 8228:8228`.
+====
+
+. Click **Create your GitHub App**.
+
+. You will be redirected to GitHub. Review the app settings:
+** **App name:** techcorp-tsf-app
+** **Homepage URL:** Your cluster URL
+** **Webhook URL:** Points to your cluster ingress
+** **Permissions:** Read/write access to checks, code, issues, pull requests, workflows
+
+. Click **Create GitHub App**.
+
+. Install the app on your organization:
+** Click **Install**
+** Select your organization
+** Choose **All repositories** or select specific repos
+** Click **Install**
+
+. Return to the terminal. The command should complete:
++
+----
+GitHub App created and installed successfully.
+----
+
+=== Verify
+
+✓ GitHub App created with correct name +
+✓ App installed on your organization +
+✓ Webhook URL configured to point to cluster +
+✓ Integration command completed successfully +
+
+[TIP]
+====
+If your browser fails to open automatically, manually copy the localhost:8228 URL from the terminal output.
+====
+
+== Exercise 5: Configure GitLab integration (alternative)
+
+[NOTE]
+====
+Complete this exercise only if you are using GitLab instead of GitHub.
+====
+
+In this exercise, you will configure GitLab integration using your Project Access Token.
+
+=== Create GitLab secret
+
+. Create a Kubernetes secret containing your GitLab token.
++
+[source,role="execute"]
+----
+oc create secret generic gitlab-auth-secret \
+  -n tsf \
+  --from-literal=password="$GITLAB__TOKEN" \
+  --type=kubernetes.io/basic-auth
+----
+
+. Label the secret for {TSFShortName} recognition.
++
+[source,role="execute"]
+----
+oc label secret gitlab-auth-secret \
+  -n tsf \
+  appstudio.redhat.com/credentials=scm
+----
+
+. Annotate the secret with your GitLab host.
++
+[source,role="execute"]
+----
+oc annotate secret gitlab-auth-secret \
+  -n tsf \
+  appstudio.redhat.com/scm.host="$GITLAB__HOST"
+----
+
+. Verify the secret was created correctly.
++
+[source,role="execute"]
+----
+oc get secret gitlab-auth-secret -n tsf -o yaml
+----
+
+=== Verify
+
+✓ Secret `gitlab-auth-secret` created in `tsf` namespace +
+✓ Secret has correct label for SCM credentials +
+✓ Secret annotated with GitLab host +
+
+== Exercise 6: Configure Quay integration
+
+In this exercise, you will configure Quay registry integration using your OAuth token.
+
+=== Run Quay integration command
+
+. Configure Quay integration using the {TSFCli} CLI.
++
+[source,role="execute"]
+----
+tsf integration quay \
+  --organization="$QUAY__ORG" \
+  --token="$QUAY__API_TOKEN" \
+  --url="$QUAY__URL"
+----
++
+Expected output:
++
+----
+Creating Quay integration secret...
+Secret tsf-quay-integration created successfully.
+----
+
+. Verify the secret was created.
++
+[source,role="execute"]
+----
+oc get secret tsf-quay-integration -n tsf
+----
++
+Expected output:
++
+----
+NAME                    TYPE     DATA   AGE
+tsf-quay-integration    Opaque   3      10s
+----
+
+. Inspect the secret contents (optional).
++
+[source,role="execute"]
+----
+oc get secret tsf-quay-integration -n tsf -o yaml
+----
+
+=== Verify
+
+✓ Quay integration secret created +
+✓ Secret contains organization, token, and URL +
+✓ Secret exists in `tsf` namespace +
+
+== Exercise 7: Deploy {TSFShortName}
+
+In this exercise, you will deploy all {TSFShortName} components using Helm charts.
+
+=== Run deployment
+
+. Deploy {TSFShortName} using the {TSFCli} CLI.
++
+[source,role="execute"]
+----
+tsf deploy
+----
++
+This command deploys nine Helm charts sequentially:
++
+. Cert-Manager
+. Storage
+. Keycloak
+. Konflux Operator
+. OpenShift Pipelines
+. Red Hat Trusted Artifact Signer (RHTAS)
+. Red Hat Trusted Profile Analyzer (RHTPA)
+. Quay integration
+. Konflux UI
++
+[IMPORTANT]
+====
+This deployment typically takes approximately *15 minutes*. Be patient and watch the output.
+====
+
+=== Monitor deployment progress
+
+. The `{TSFCli} deploy` command shows progress for each Helm chart:
++
+----
+Deploying cert-manager...
+✓ Cert-Manager deployed successfully
+
+Deploying storage...
+✓ Storage deployed successfully
+
+Deploying keycloak...
+✓ Keycloak deployed successfully
+
+...
+----
+
+. You can monitor pod status in another terminal (outside the container):
++
+[source,bash]
+----
+watch oc get pods -A
+----
+
+=== Wait for completion
+
+. The deployment is complete when you see:
++
+----
+All components deployed successfully!
+
+Konflux UI: https://konflux-ui-konflux-ui.apps.cluster-abc123.ocpv00.rhdp.net
+RHTPA UI: https://rhtpa-ui-tsf-tpa.apps.cluster-abc123.ocpv00.rhdp.net
+----
+
+. Note the URLs -- you will need them in the next module.
+
+=== Verify
+
+✓ All nine Helm charts deployed successfully +
+✓ No errors in deployment output +
+✓ Konflux UI URL displayed +
+✓ RHTPA UI URL displayed +
+
+[TIP]
+====
+If the deployment appears to hang, it may be pulling large container images. Check pod status with `oc get pods -A` in another terminal.
+====
+
+== Troubleshooting
+
+=== Issue: Quay token error
+
+**Problem:** Deploy command fails with "token field not found in secret"
+
+**Solution:**
+
+. Verify your Quay token is valid by logging in to Quay.
+. Delete the secret:
++
+[source,bash]
+----
+oc delete secret tsf-quay-integration -n tsf
+----
+
+. Re-run the Quay integration command:
++
+[source,bash]
+----
+tsf integration quay \
+  --organization="$QUAY__ORG" \
+  --token="$QUAY__API_TOKEN" \
+  --url="$QUAY__URL"
+----
+
+. Restart deployment:
++
+[source,bash]
+----
+tsf deploy
+----
+
+=== Issue: Browser fails during GitHub integration
+
+**Problem:** Command logs error about missing "xdg-open" executable
+
+**Solution:**
+
+The installer container lacks graphical browser capability. Manually copy the localhost:8228 URL from the terminal and open it in your browser.
+
+=== Issue: Deployment appears to hang
+
+**Problem:** Deploy command runs without output for several minutes
+
+**Solution:**
+
+. This is normal -- Helm chart deployment can take time.
+. Monitor progress separately:
++
+[source,bash]
+----
+oc get pods -A --watch
+----
+
+. Typical completion time is 15 minutes.
+
+== Learning outcomes
+
+Let's verify what you've accomplished in this module:
+
+* ✓ You started the {TSFShortName} installer container with Podman
+* ✓ You authenticated to your {OCPName} cluster from the container
+* ✓ You created the cluster configuration with `{TSFCli} config --create`
+* ✓ You configured GitHub OR GitLab integration
+* ✓ You configured Quay registry integration
+* ✓ You deployed all {TSFShortName} components with `{TSFCli} deploy`
+* ✓ You received the Konflux UI and RHTPA UI URLs
+
+== Summary
+
+In this module, you successfully installed {TSFShortName} on your {OCPName} cluster:
+
+* Started the containerized installer with your configuration
+* Created cluster configuration and verified prerequisites
+* Configured integrations with GitHub/GitLab and Quay
+* Deployed nine Helm charts creating all components
+* Obtained access URLs for Konflux and RHTPA
+
+The secure software supply chain is now deployed and ready for verification!
+
+Click *Next* to continue to Module 3 and verify your deployment.

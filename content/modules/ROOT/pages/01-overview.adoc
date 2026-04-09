@@ -1,0 +1,78 @@
+= Workshop overview
+
+== Introduction
+
+Welcome to the {TSFName} ({TSFShortName}) workshop. In this hands-on lab, you will deploy and configure a complete secure software supply chain on {OCPName}, then use it to build, sign, and verify your first containerized application with SLSA Level 3 provenance.
+
+== Business scenario
+
+*TechCorp Industries* is a financial services company that develops cloud-native applications on {OCPName}. Their security team has mandated that all container images must be:
+
+* Built using secure, auditable CI/CD pipelines
+* Cryptographically signed with verifiable provenance
+* Scanned for vulnerabilities before deployment
+* Traceable with complete Software Bills of Materials (SBOM)
+
+The platform engineering team has been tasked with implementing {TSFName} to meet these requirements while maintaining developer productivity and enabling rapid application delivery.
+
+As a *platform engineer* at TechCorp, you will:
+
+. Prepare the {OCPName} cluster with required integrations
+. Deploy {TSFShortName} and configure connections to GitHub and Quay
+. Verify the deployment across all components
+. Onboard your first application and trigger a secure build pipeline
+. Validate the cryptographic signatures and SBOM artifacts
+
+== Learning objectives
+
+By completing this workshop, you will be able to:
+
+* **Understand** the architecture and components of {TSFName}
+* **Prepare** an {OCPName} cluster with prerequisites for {TSFShortName} installation
+* **Install** {TSFShortName} using the containerized installer
+* **Configure** integrations with GitHub/GitLab and Quay registry
+* **Verify** successful deployment of all {TSFShortName} components
+* **Access** the Konflux UI and authenticate with Keycloak
+* **Create** applications and components in Konflux
+* **Trigger** secure build pipelines with automatic signing
+* **Validate** SLSA Level 3 provenance and signature artifacts
+* **Analyze** SBOMs and vulnerability reports in {RHTPAName}
+
+== Workshop modules
+
+This workshop is organized into the following modules:
+
+Module 1: Preparing to install::
+Learn about {TSFShortName} architecture and prepare your cluster with required accounts, credentials, and configuration files.
+
+Module 2: Installing {TSFShortName}::
+Run the {TSFShortName} installer container, configure integrations with GitHub and Quay, and deploy all components using Helm charts.
+
+Module 3: Verifying and accessing::
+Verify successful deployment of all components, access the Konflux UI, and explore the deployed namespaces and services.
+
+Module 4: Getting started with Konflux::
+Create your first application, onboard a component from Git, trigger a secure build pipeline, and verify the signed artifacts with SLSA provenance.
+
+== Expected outcomes
+
+After completing this workshop, you will have:
+
+* A fully functional {TSFShortName} deployment on {OCPName}
+* Understanding of secure software supply chain principles
+* Hands-on experience with Konflux, {RHTASName}, and {RHTPAName}
+* A signed container image with SLSA Level 3 provenance
+* Knowledge of how to onboard applications to the secure pipeline
+
+== Workshop duration
+
+* **Estimated time:** 2 hours
+* **Module 1:** 20 minutes
+* **Module 2:** 40 minutes
+* **Module 3:** 20 minutes
+* **Module 4:** 30 minutes
+* **Wrap-up and Q&A:** 10 minutes
+
+== Let's begin
+
+Ready to implement a secure software supply chain? Click *Next* to start Module 1 and learn about the prerequisites for installing {TSFShortName}.

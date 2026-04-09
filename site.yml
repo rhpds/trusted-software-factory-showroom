@@ -1,7 +1,7 @@
 ---
 site:
-  title: Showroom Template Demo
-  url: https://github.com/rhpds/showroom_template_nookbag
+  title: Trusted Software Factory Workshop
+  url: https://github.com/rhpds/trusted-software-factory-showroom
   start_page: modules::index.adoc
 
 content:

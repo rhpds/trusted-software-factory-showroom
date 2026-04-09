@@ -1,19 +1,14 @@
-* xref:index.adoc[What is Showroom?]
+* xref:index.adoc[Workshop Home]
 
-.Content Developer Guide
-* xref:quick-start.adoc[Quick Start]
-* xref:content-repo.adoc[Creating a Content Repository]
-* xref:agnosticv-config.adoc[AgnosticV Configuration]
-* xref:ui-config.adoc[UI Configuration]
-* xref:user-data.adoc[User Data and Variables]
-* xref:attribute-example.adoc[Attribute Injection Example]
-* xref:ocp4-role-reference.adoc[OCP4 Role Reference]
-* xref:vm-role-reference.adoc[VM Role Reference]
+.Getting Started
+* xref:01-overview.adoc[Workshop Overview]
+* xref:02-details.adoc[Workshop Details]
 
-.Showroom Developer Guide
-* xref:architecture.adoc[Architecture]
-* xref:deployer.adoc[Showroom Deployer]
-* xref:images.adoc[Showroom Images]
-* xref:nookbag.adoc[Nookbag UI]
-* xref:ocp-integration.adoc[OCP Integration]
-* xref:contributing.adoc[Contributing]
+.Hands-on Modules
+* xref:03-module-01-preparing.adoc[Module 1: Preparing to Install]
+* xref:04-module-02-installing.adoc[Module 2: Installing TSF]
+* xref:05-module-03-verifying.adoc[Module 3: Verifying and Accessing]
+* xref:06-module-04-getting-started.adoc[Module 4: Getting Started with Konflux]
+
+.Wrap-up
+* xref:07-conclusion.adoc[Conclusion]

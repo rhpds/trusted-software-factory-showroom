@@ -1,94 +1,60 @@
-= What is Showroom?
-:navtitle: What is Showroom?
+= {TSFName} Workshop
 
-Showroom is a web-based lab instruction platform for the https://demo.redhat.com[Red Hat Demo Platform].
-It combines rendered AsciiDoc content with embedded terminals, consoles, and interactive tools -- giving workshop and demo participants everything they need in a single browser tab.
+Welcome to the {TSFName} ({TSFShortName}) workshop!
 
-== What Users See
+== What you'll learn
 
-When a participant opens their Showroom URL they get a split-pane interface:
+In this workshop, you will learn how to deploy and use {TSFName}, a secure software supply chain solution for {OCPName}. By the end of this workshop, you will be able to:
 
-* **Left pane** -- step-by-step lab instructions rendered from an https://antora.org[Antora] site you author in AsciiDoc.
-* **Right pane** -- one or more tabs such as:
-** A web terminal (SSH to a bastion, containerised CLI tools, or both).
-** The OpenShift web console embedded in an iframe.
-** A VS Code editor (Code Server).
-** A VNC desktop (noVNC).
-** Any external URL you choose.
+* Prepare your {OCPName} cluster for {TSFShortName} installation
+* Install and configure {TSFShortName} with GitHub or GitLab integration
+* Verify your deployment and access the Konflux UI
+* Build, sign, and verify your first container image with SLSA Level 3 provenance
+* Understand how {TSFShortName} integrates {RHTASName} for cryptographic signing
+* Generate and analyze Software Bills of Materials (SBOM) with {RHTPAName}
 
-The UI layout, tab names, and tab URLs are all controlled by a simple `ui-config.yml` file that lives in your content repository.
+== Who this is for
 
-== How It Gets Deployed
+This workshop is designed for platform engineers, DevSecOps practitioners, and developers who want to implement secure software supply chain practices on {OCPName}. You should have:
 
-This Ansible collection -- `agnosticd.showroom` -- is the primary way Showroom instances are deployed on the Red Hat Demo Platform.
-Depending on the environment type, you use one of two roles:
+* Basic knowledge of {OCPName} and Kubernetes concepts
+* Familiarity with CI/CD pipelines (Tekton/Jenkins)
+* Understanding of container images and registries
+* Experience with Git workflows
 
-[cols="1,3",options="header"]
-|===
-|Role |Use when...
+== What is {TSFName}?
 
-|`ocp4_workload_showroom`
-|Your lab runs on an OpenShift 4 cluster.
-The role deploys Showroom as a pod using a Helm chart, complete with content rendering, terminals, and an OpenShift `Route`.
+{TSFName} is a deployable instance of Konflux that brings a complete secure software supply chain to your {OCPName} cluster. It integrates multiple Red Hat technologies to enable:
 
-|`vm_workload_showroom`
-|Your lab runs on a VM (RHEL, Fedora, etc.).
-The role deploys Showroom with rootless Podman, Traefik for TLS, and systemd for lifecycle management.
-|===
+* **Secure build pipelines** -- Tekton-based CI/CD that generates signed container images with SLSA Level 3 provenance
+* **Artifact signing** -- Automatic cryptographic signing using {RHTASName}
+* **Software bill of materials** -- SBOM generation with vulnerability scanning
+* **Identity management** -- Keycloak-based authentication and access control
+* **Container registry integration** -- Automated deployment to Quay
 
-Both roles follow the same basic flow:
+== Prerequisites
 
-. Clone your Antora content repository.
-. Inject runtime variables (credentials, hostnames, GUIDs) as AsciiDoc attributes.
-. Render the content to HTML.
-. Serve the content alongside the terminal and tab services you configured.
-. Publish the final URL back to the user.
+Before starting this workshop, you should have access to:
 
-== Key Concepts
+* {OCPName} cluster running version {OCPVersion} or later (3+ nodes, not SNO)
+* Cluster-admin privileges
+* Quay registry account (quay.io or self-hosted)
+* GitHub organization OR GitLab instance
+* Local workstation with:
+** {OCPCli} CLI installed
+** Podman installed (Docker not supported)
 
-Content repository::
-A Git repo containing your AsciiDoc lab instructions, structured as an Antora component.
-You typically fork https://github.com/rhpds/showroom_template_nookbag[showroom_template_nookbag] and add your own pages.
-See xref:content-repo.adoc[].
+== Workshop environment
 
-AgnosticV catalog item::
-The YAML configuration in the https://github.com/rhpds/agnosticv[agnosticv] repository that ties your content repo to an environment on the Red Hat Demo Platform.
-See xref:agnosticv-config.adoc[].
+This workshop uses a dedicated {OCPName} cluster where you will:
 
-User data::
-A set of key-value pairs (hostnames, passwords, URLs) written by infrastructure roles during provisioning and automatically injected into your content as Antora attributes.
-See xref:user-data.adoc[].
+. Prepare the cluster and configure integrations
+. Install {TSFShortName} using the installer container
+. Verify the deployment across multiple namespaces
+. Build and release your first secure application
 
-UI configuration::
-A `ui-config.yml` file in your content repo that defines the tabs, layout width, and dynamic URLs shown alongside your lab instructions.
-See xref:ui-config.adoc[].
+Access your cluster console at: {openshift_console_url}
 
-== Where to Start
+== Let's get started!
 
-[cols="1,3",options="header"]
-|===
-|Goal |Page
-
-|Get a Showroom lab running quickly
-|xref:quick-start.adoc[]
-
-|Create or structure a content repo
-|xref:content-repo.adoc[]
-
-|Wire up an AgnosticV catalog item
-|xref:agnosticv-config.adoc[]
-
-|Understand the full architecture
-|xref:architecture.adoc[]
-
-|Contribute to Showroom itself
-|xref:contributing.adoc[]
-|===
-
-== Related Projects
-
-* https://github.com/agnosticd/showroom[agnosticd.showroom collection] -- this Ansible collection (you are here).
-* https://github.com/rhpds/showroom_template_nookbag[showroom_template_nookbag] -- the recommended content repo template.
-* https://github.com/rhpds/showroom-deployer[showroom-deployer] -- Helm charts that power OCP deployments.
-* https://github.com/rhpds/showroom-images[showroom-images] -- container images (content server, terminals, Antora, etc.).
-* https://github.com/rhpds/nookbag[nookbag] -- the zero-touch UI bundle.
+Click on the next section to begin learning about {TSFName} and preparing for installation.

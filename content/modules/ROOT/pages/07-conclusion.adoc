@@ -1,0 +1,321 @@
+= Conclusion
+
+== Workshop summary
+
+Congratulations on completing the {TSFName} workshop!
+
+In this workshop, you successfully:
+
+✓ **Prepared** your {OCPName} cluster with required accounts and credentials +
+✓ **Installed** {TSFShortName} using the containerized installer +
+✓ **Configured** integrations with GitHub/GitLab and Quay registry +
+✓ **Verified** deployment of all eight core components +
+✓ **Created** your first application in Konflux +
+✓ **Triggered** a secure build pipeline with automatic signing +
+✓ **Validated** cryptographic signatures and SLSA Level 3 provenance +
+✓ **Analyzed** Software Bills of Materials and vulnerability reports +
+
+== What you've built
+
+TechCorp Industries (and you!) now have a complete secure software supply chain on {OCPName}:
+
+Infrastructure layer::
+* Cert-Manager for TLS certificates
+* Red Hat Build of Keycloak for authentication
+* Storage components for persistent data
+
+Build and CI/CD layer::
+* Konflux for application management
+* OpenShift Pipelines (Tekton) for automated builds
+* GitHub/GitLab integration for source control
+
+Security layer::
+* {RHTASName} for cryptographic signing with Fulcio and Rekor
+* SLSA Level 3 provenance for build attestation
+* {RHTPAName} for SBOM generation and vulnerability scanning
+
+Distribution layer::
+* Quay integration for signed image storage
+* Automated release pipelines
+
+This architecture ensures that every container image is:
+
+* Built from verified source code
+* Signed with cryptographic keys
+* Traceable with complete provenance
+* Scanned for vulnerabilities
+* Documented with full SBOM
+
+== Key concepts recap
+
+=== Konflux
+
+Konflux is the orchestration layer that ties everything together. It provides:
+
+* Application and component management
+* Pipeline definitions and triggers
+* Release plans and strategies
+* Integration with source control and registries
+
+=== SLSA provenance
+
+SLSA (Supply-chain Levels for Software Artifacts) Level 3 provenance provides:
+
+* **Non-falsifiable** -- Signed by build system, cannot be forged
+* **Complete** -- Records all inputs and build steps
+* **Isolated** -- Build runs in ephemeral environment
+
+This enables you to verify *exactly* how an image was built, from which source, by which pipeline.
+
+=== {RHTASName}
+
+Red Hat Trusted Artifact Signer (based on Sigstore) provides:
+
+* **Fulcio** -- Certificate authority that issues short-lived signing certificates
+* **Rekor** -- Transparency log that records all signatures
+* **TUF** -- Framework for secure distribution of trust roots
+
+Signatures are tied to your identity (via OIDC), not long-lived keys that can be compromised.
+
+=== {RHTPAName}
+
+Red Hat Trusted Profile Analyzer generates:
+
+* **SBOMs** -- Complete inventory of all software components
+* **Vulnerability reports** -- Known CVEs affecting your images
+* **License information** -- Compliance and legal review data
+
+This enables proactive security management and rapid response to new vulnerabilities.
+
+== Common troubleshooting scenarios
+
+=== Issue: Quay token error during deployment
+
+**Problem:** The `tsf deploy` command fails with "token field not found in secret"
+
+**Root cause:** Expired, invalid, or incorrectly saved Quay OAuth token
+
+**Solution:**
+
+. Regenerate the Quay OAuth token in Quay UI
+. Remove the secret:
++
+[source,role="execute"]
+----
+oc delete secret tsf-quay-integration -n tsf
+----
+
+. Re-run Quay integration:
++
+[source,role="execute"]
+----
+tsf integration quay \
+  --organization="$QUAY__ORG" \
+  --token="$QUAY__API_TOKEN" \
+  --url="$QUAY__URL"
+----
+
+. Restart deployment:
++
+[source,role="execute"]
+----
+tsf deploy
+----
+
+=== Issue: Cert-Manager subscription conflict
+
+**Problem:** Deployment fails due to subscription conflict for Cert-Manager operator
+
+**Root cause:** Red Hat Cert-Manager Operator already installed on cluster
+
+**Solution:**
+
+Edit the `tsf-config` ConfigMap and change Cert-Manager's `manageSubscription` from `true` to `false`:
+
+[source,role="execute"]
+----
+oc edit configmap tsf-config -n tsf
+----
+
+Find the Cert-Manager component section and modify:
+[source,yaml]
+----
+cert-manager:
+  enabled: true
+  manageSubscription: false  # Change this from true to false
+----
+
+Save and restart deployment.
+
+=== Issue: RHTPA UI URL inaccessible
+
+**Problem:** URL displays "server%s(<nil>)" or returns an error
+
+**Root cause:** RHTPA service or PostgreSQL dependency failed to start
+
+**Diagnostic commands:**
+
+. Check RHTPA operator status:
++
+[source,role="execute"]
+----
+oc get pods -n tsf-tpa
+----
+
+. Check PostgreSQL:
++
+[source,role="execute"]
+----
+oc get pods -n tsf-tpa | grep postgres
+----
+
+. Review operator logs:
++
+[source,role="execute"]
+----
+oc logs -n tsf-tpa deployment/rhtpa-operator
+----
+
+. Locate correct URL:
++
+[source,role="execute"]
+----
+oc get routes -n tsf-tpa
+----
+
+=== Issue: Deployment appears to hang
+
+**Problem:** Deploy command runs indefinitely without output
+
+**Root cause:** Extended processing time for Helm chart deployment and container image pulls
+
+**Resolution:**
+
+This is normal behavior. Monitor progress separately:
+
+[source,role="execute"]
+----
+watch oc get pods -A
+----
+
+Typical completion time is approximately 15 minutes. Large images (Keycloak, RHTPA) take time to pull.
+
+=== Issue: Browser fails during GitHub integration
+
+**Problem:** Command logs error about missing "xdg-open" executable
+
+**Root cause:** Installer container lacks graphical browser capability
+
+**Solution:**
+
+Manually copy the `localhost:8228` URL from the terminal output and open it in your web browser. The port is already exposed by the `podman run -p 8228:8228` command.
+
+=== Issue: Pipeline fails with "cannot push to Quay"
+
+**Problem:** Build pipeline succeeds but push to Quay fails
+
+**Root cause:** Quay organization doesn't exist or token lacks permissions
+
+**Solution:**
+
+. Verify the organization exists in Quay
+. Verify the OAuth token has write permissions
+. Check the Quay integration secret:
++
+[source,role="execute"]
+----
+oc get secret tsf-quay-integration -n tsf -o yaml
+----
+
+. If needed, recreate the integration:
++
+[source,role="execute"]
+----
+oc delete secret tsf-quay-integration -n tsf
+tsf integration quay \
+  --organization="$QUAY__ORG" \
+  --token="$QUAY__API_TOKEN" \
+  --url="$QUAY__URL"
+----
+
+=== Issue: Component not triggering builds
+
+**Problem:** Merged PR but pipeline never runs
+
+**Root cause:** Webhook not configured or not reaching cluster
+
+**Solution:**
+
+. Check webhook configuration in GitHub/GitLab
+. Verify cluster is publicly accessible
+. Check Tekton EventListener:
++
+[source,role="execute"]
+----
+oc get eventlistener -A
+----
+
+. Check recent webhook deliveries in GitHub/GitLab settings
+
+== Next steps
+
+=== Expand your secure supply chain
+
+* **Onboard more applications** -- Move your production workloads to {TSFShortName}
+* **Customize pipelines** -- Add custom build steps, tests, and validations
+* **Implement policy enforcement** -- Use Conforma to enforce security policies
+* **Configure multi-environment releases** -- Set up dev, staging, production pipelines
+
+=== Advanced topics
+
+* **Custom integration tests** -- Define application-specific validation
+* **Multi-component applications** -- Build microservices architectures
+* **Security policies** -- Enforce image signing, vulnerability thresholds, SBOM requirements
+* **Deployment automation** -- Integrate with ArgoCD or OpenShift GitOps
+
+=== Stay up to date
+
+* **{TSFShortName} documentation:** link:https://redhat-appstudio.github.io/tsf-cli/tsf/index.html[Official TSF docs^]
+* **Konflux project:** link:https://konflux-ci.dev/docs/[Konflux documentation^]
+* **Sigstore project:** link:https://www.sigstore.dev/[Sigstore community^]
+* **SLSA framework:** link:https://slsa.dev/[SLSA specification^]
+
+== Workshop feedback
+
+We hope this workshop helped you understand secure software supply chains and how to implement them on {OCPName} with {TSFShortName}.
+
+Your feedback helps us improve! Please share:
+
+* What worked well
+* What could be improved
+* Topics you'd like to see covered
+* Real-world use cases you're implementing
+
+== Resources and references
+
+=== Documentation
+
+* link:https://redhat-appstudio.github.io/tsf-cli/tsf/index.html[{TSFName} Documentation^]
+* link:https://konflux-ci.dev/docs/[Konflux Documentation^]
+* link:https://docs.redhat.com/en/documentation/red_hat_trusted_artifact_signer[{RHTASName} Documentation^]
+* link:https://docs.redhat.com/en/documentation/red_hat_trusted_profile_analyzer[{RHTPAName} Documentation^]
+* link:https://docs.openshift.com/pipelines/[OpenShift Pipelines Documentation^]
+
+=== Community and standards
+
+* link:https://www.sigstore.dev/[Sigstore Project^] -- Open source signing and transparency
+* link:https://slsa.dev/[SLSA Framework^] -- Supply-chain security levels
+* link:https://cyclonedx.org/[CycloneDX^] -- SBOM standard
+* link:https://spdx.dev/[SPDX^] -- Software package data exchange
+
+=== Source code
+
+* link:https://github.com/redhat-appstudio/tsf-cli[TSF CLI GitHub Repository^]
+* link:https://github.com/konflux-ci[Konflux GitHub Organization^]
+* link:https://github.com/sigstore[Sigstore GitHub Organization^]
+
+== Thank you!
+
+Thank you for completing the {TSFName} workshop. You now have the knowledge and hands-on experience to implement secure software supply chains on {OCPName}.
+
+Happy building -- securely! 🔒

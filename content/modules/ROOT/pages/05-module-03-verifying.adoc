@@ -1,0 +1,385 @@
+= Module 3: Verifying and accessing
+
+== Learning objectives
+
+By the end of this module, you will be able to:
+
+* Verify successful deployment of all {TSFShortName} components
+* Access the Konflux UI and authenticate with Keycloak
+* Explore deployed namespaces and services
+* Verify {RHTASName} and {RHTPAName} components
+* Understand the architecture of the deployed system
+
+== Introduction
+
+With {TSFShortName} deployed, you need to verify that all components are running correctly and accessible. In this module, you will check each component, access the Konflux UI, and explore the architecture that TechCorp Industries now has in place for their secure software supply chain.
+
+== Exercise 1: Verify deployed namespaces
+
+In this exercise, you will verify that all required namespaces were created during deployment.
+
+=== List all namespaces
+
+. View all namespaces created by {TSFShortName}.
++
+[source,role="execute"]
+----
+oc get namespaces | grep -E '(tsf|konflux|cert-manager|rhbk|rhtpa|openshift-storage)'
+----
++
+Expected output:
++
+----
+cert-manager-operator          Active   10m
+konflux-ui                     Active   8m
+openshift-storage              Active   12m
+rhbk-operator                  Active   11m
+rhtpa-operator                 Active   9m
+tsf                            Active   15m
+tsf-tpa                        Active   9m
+----
+
+. Count the namespaces to ensure all were created.
++
+[source,role="execute"]
+----
+oc get namespaces | grep -E '(tsf|konflux|cert-manager|rhbk|rhtpa|openshift-storage)' | wc -l
+----
+
+=== Verify
+
+✓ All required namespaces exist +
+✓ Namespaces are in "Active" status +
+
+== Exercise 2: Verify component operators
+
+In this exercise, you will verify that all operators are running correctly.
+
+=== Verify Cert-Manager operator
+
+. Check the Cert-Manager operator pod.
++
+[source,role="execute"]
+----
+oc get pods -n cert-manager-operator
+----
++
+Expected output:
++
+----
+NAME                                                READY   STATUS    RESTARTS   AGE
+cert-manager-operator-controller-manager-xxxxx      2/2     Running   0          12m
+----
+
+=== Verify Keycloak operator
+
+. Check the Keycloak (Red Hat Build of Keycloak) operator.
++
+[source,role="execute"]
+----
+oc get pods -n rhbk-operator
+----
++
+Expected output:
++
+----
+NAME                               READY   STATUS    RESTARTS   AGE
+rhbk-operator-xxxxx-xxxxx          1/1     Running   0          11m
+----
+
+=== Verify RHTPA operator
+
+. Check the {RHTPAName} operator.
++
+[source,role="execute"]
+----
+oc get pods -n rhtpa-operator
+----
++
+Expected output:
++
+----
+NAME                                READY   STATUS    RESTARTS   AGE
+rhtpa-operator-xxxxx-xxxxx          1/1     Running   0          9m
+----
+
+=== Verify Konflux components
+
+. Check the Konflux UI pods.
++
+[source,role="execute"]
+----
+oc get pods -n konflux-ui
+----
++
+Expected output:
++
+----
+NAME                           READY   STATUS    RESTARTS   AGE
+konflux-ui-xxxxx-xxxxx         1/1     Running   0          8m
+----
+
+=== Verify
+
+✓ All operator pods are in "Running" status +
+✓ All pods show "READY" with correct replica counts +
+✓ No pods in "CrashLoopBackOff" or "Error" states +
+
+== Exercise 3: Verify deployed routes
+
+In this exercise, you will identify the URLs for accessing {TSFShortName} components.
+
+=== Get Konflux UI route
+
+. Find the Konflux UI route.
++
+[source,role="execute"]
+----
+oc get routes -n konflux-ui
+----
++
+Expected output:
++
+----
+NAME         HOST/PORT
+konflux-ui   konflux-ui-konflux-ui.apps.cluster-abc123.ocpv00.rhdp.net
+----
+
+. Save the URL for later use:
++
+[source,bash]
+----
+KONFLUX_URL=$(oc get route konflux-ui -n konflux-ui -o jsonpath='{.spec.host}')
+echo "Konflux UI: https://$KONFLUX_URL"
+----
+
+=== Get RHTPA UI route
+
+. Find the {RHTPAName} UI route.
++
+[source,role="execute"]
+----
+oc get routes -n tsf-tpa
+----
++
+Expected output:
++
+----
+NAME       HOST/PORT
+rhtpa-ui   rhtpa-ui-tsf-tpa.apps.cluster-abc123.ocpv00.rhdp.net
+----
+
+. Save the URL for later use:
++
+[source,bash]
+----
+RHTPA_URL=$(oc get route rhtpa-ui -n tsf-tpa -o jsonpath='{.spec.host}')
+echo "RHTPA UI: https://$RHTPA_URL"
+----
+
+=== Verify
+
+✓ Konflux UI route exists and is accessible +
+✓ RHTPA UI route exists and is accessible +
+✓ Both routes use HTTPS with valid certificates +
+
+== Exercise 4: Access the Konflux UI
+
+In this exercise, you will access the Konflux UI for the first time and authenticate.
+
+=== Open the Konflux UI
+
+. Open a web browser and navigate to the Konflux UI URL:
++
+[source,bash]
+----
+https://<your-konflux-ui-route>
+----
++
+Or use the URL saved earlier:
++
+[source,bash]
+----
+echo "https://$KONFLUX_URL"
+----
+
+. You will be redirected to the {OCPName} login page.
+
+=== Authenticate with OpenShift
+
+. Enter your {OCPName} credentials:
+** **Username:** Your cluster admin username
+** **Password:** Your cluster admin password
+
+. Click **Log In**.
+
+=== Authorize the Dex client
+
+. You will see an "Authorize Access" page for the `dex-client` service account.
+
+. Review the requested permissions:
+** **user:info** -- Read-only access to your user information
+
+. Click **Allow selected permissions**.
+
+=== Verify successful login
+
+. After authorization, you should see the Konflux landing page:
++
+----
+Get started with Konflux
+
+Create a new application or view your namespaces
+----
+
+. The UI should display:
+** "Create an application" button
+** Navigation menu with Applications, Releases, etc.
+** Your username in the top right corner
+
+=== Verify
+
+✓ Successfully accessed Konflux UI +
+✓ Authenticated with {OCPName} credentials +
+✓ Authorized Dex client permissions +
+✓ Landing page displays correctly +
+
+[TIP]
+====
+If you see certificate warnings, your cluster may be using self-signed certificates. This is normal for development clusters. Accept the certificate to proceed.
+====
+
+== Exercise 5: Explore deployed components
+
+In this exercise, you will explore the architecture and components deployed by {TSFShortName}.
+
+=== View OpenShift Pipelines (Tekton)
+
+. Check for Tekton components.
++
+[source,role="execute"]
+----
+oc get pods -n openshift-pipelines
+----
++
+You should see Tekton controllers, webhooks, and triggers running.
+
+=== View RHTAS components
+
+. Check {RHTASName} components.
++
+[source,role="execute"]
+----
+oc get pods -n tsf | grep -E '(fulcio|rekor|tuf)'
+----
++
+You should see:
+** **Fulcio** -- Certificate authority for code signing
+** **Rekor** -- Transparency log for signatures
+** **TUF** -- Update framework for secure artifact distribution
+
+=== View storage components
+
+. Check storage provisioners.
++
+[source,role="execute"]
+----
+oc get pods -n openshift-storage
+----
++
+You should see storage operator pods running.
+
+=== View Quay integration
+
+. Check the Quay integration secret.
++
+[source,role="execute"]
+----
+oc get secret tsf-quay-integration -n tsf
+----
++
+This secret contains your Quay credentials used by Konflux to push signed images.
+
+=== Verify
+
+✓ Tekton pipelines components running +
+✓ RHTAS components (Fulcio, Rekor, TUF) running +
+✓ Storage components provisioned +
+✓ Quay integration configured +
+
+== Exercise 6: Understand the architecture
+
+In this exercise, you will understand how the deployed components work together.
+
+=== Component roles
+
+The deployed system has eight core components:
+
+Cert-Manager::
+Manages TLS certificates for secure communication between components
+
+Red Hat Build of Keycloak::
+Provides identity and access management with SSO for Konflux UI
+
+Konflux Operator::
+Defines Custom Resource Definitions (CRDs) for build pipelines and applications
+
+Konflux UI::
+Web interface for creating applications, viewing builds, and managing releases
+
+OpenShift Pipelines::
+Tekton-based CI/CD engine that runs build and test pipelines
+
+{RHTASName}::
+Provides cryptographic signing of container images using Fulcio and Rekor transparency logs
+
+{RHTPAName}::
+Generates SBOMs and performs vulnerability scanning with Guac and Bombastic
+
+Quay integration::
+Stores credentials for pushing signed images to Quay registry
+
+=== Data flow
+
+Here's how these components work together when building an application:
+
+. Developer pushes code to GitHub/GitLab
+. Webhook triggers Konflux pipeline via Tekton
+. Pipeline builds container image
+. {RHTASName} signs the image with Fulcio and records in Rekor
+. {RHTPAName} generates SBOM and scans for vulnerabilities
+. Pipeline pushes signed image to Quay
+. Release pipeline deploys to target environment
+
+=== Verify understanding
+
+Review the following statements:
+
+✓ I understand the role of each component +
+✓ I understand how webhooks trigger pipelines +
+✓ I understand how images are signed and verified +
+✓ I understand how SBOMs are generated +
+
+== Learning outcomes
+
+Let's verify what you've accomplished in this module:
+
+* ✓ You verified all required namespaces were created
+* ✓ You confirmed all operators are running correctly
+* ✓ You identified the Konflux UI and RHTPA UI routes
+* ✓ You successfully accessed and authenticated to the Konflux UI
+* ✓ You explored the deployed components and their purposes
+* ✓ You understand the architecture and data flow of {TSFShortName}
+
+== Summary
+
+In this module, you verified your {TSFShortName} deployment:
+
+* Checked all namespaces and operator pods
+* Accessed the Konflux UI and authenticated with Keycloak
+* Explored Tekton, RHTAS, and RHTPA components
+* Understood how the components work together to create a secure software supply chain
+
+Your {TSFShortName} deployment is verified and ready to use!
+
+Click *Next* to continue to Module 4 and build your first secure application.

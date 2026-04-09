@@ -1,0 +1,439 @@
+= Module 4: Getting started with Konflux
+
+== Learning objectives
+
+By the end of this module, you will be able to:
+
+* Create an application in Konflux
+* Onboard a component from a Git repository
+* Understand how Konflux automatically configures build pipelines
+* Configure release settings for your application
+* Trigger a secure build and release pipeline
+* Verify signed container images with SLSA Level 3 provenance
+* Analyze SBOMs and vulnerability reports
+
+== Introduction
+
+Now that {TSFShortName} is deployed and verified, you're ready to build your first secure application. In this module, you will use the Konflux UI to create an application, onboard a component from GitHub, and trigger a complete build-sign-release workflow.
+
+This is where TechCorp's platform engineering work pays off -- developers can now build secure, signed container images automatically!
+
+== Exercise 1: Create an application
+
+In this exercise, you will create your first application in Konflux.
+
+=== Access Konflux UI
+
+. Open the Konflux UI in your browser (if not already open):
++
+[source,bash]
+----
+echo "https://$KONFLUX_URL"
+----
+
+. Ensure you are logged in and see the landing page.
+
+=== Create application
+
+. Click **Create an application**.
+
+. Enter an application name:
++
+----
+my-first-app
+----
++
+[TIP]
+====
+Application names must be lowercase with hyphens. For example: `techcorp-payment-service`
+====
+
+. Click **Create**.
+
+. You should see your new application page with:
+** Application name at the top
+** "Add component" button
+** Empty components list
+
+=== Verify
+
+✓ Application created successfully +
+✓ Application name appears in UI +
+✓ Application page displays with "Add component" option +
+
+[NOTE]
+====
+An *application* in Konflux represents "a logical grouping of one or more components that are built, tested, and released together." For example, a microservices application might have multiple components (frontend, backend, database) that are deployed as a unit.
+====
+
+== Exercise 2: Add a component
+
+In this exercise, you will onboard your first component by connecting a Git repository.
+
+=== Prepare the sample repository
+
+For this workshop, you will use the Konflux sample component repository.
+
+. Fork the sample repository to your GitHub organization:
++
+link:https://github.com/konflux-ci/sample-component-golang[https://github.com/konflux-ci/sample-component-golang^]
++
+Or use the repository directly (read-only).
+
+=== Add component in Konflux
+
+. From your application page, click **Add component**.
+
+. Enter your Git repository URL:
++
+----
+https://github.com/<your-org>/sample-component-golang
+----
++
+Or use the sample directly:
++
+----
+https://github.com/konflux-ci/sample-component-golang
+----
+
+. Select the branch to build (default: `main`).
+
+. Konflux automatically detects:
+** **Dockerfile location** (if present)
+** **Build strategy** (Dockerfile, Buildpacks, etc.)
+** **Pipeline template** to use
+
+. Click **Create component**.
+
+=== Understand what happens
+
+When you create a component, Konflux automatically:
+
+. **Sends a pull request** to your repository adding `.tekton/` directory
+. **Creates pipeline definitions** that trigger on push and pull request events
+. **Configures integration tests** that run after builds
+. **Sets up CI checks** in your repository
+
+[IMPORTANT]
+====
+*Do not merge the pull request yet!* You need to configure release settings first.
+====
+
+=== View the pull request
+
+. Go to your GitHub repository (if you forked it).
+
+. Click **Pull requests**.
+
+. You should see a pull request from Konflux adding `.tekton/` directory:
++
+----
+Title: Add Konflux pipeline definitions
+Files changed: .tekton/pull-request.yaml, .tekton/push.yaml
+----
+
+. Review the files but *do not merge yet*.
+
+=== Verify
+
+✓ Component created in Konflux +
+✓ Pull request sent to GitHub repository +
+✓ `.tekton/` directory added with pipeline definitions +
+✓ Pipeline files visible in PR +
+
+[TIP]
+====
+The `.tekton/` directory contains Tekton PipelineRun definitions that are triggered by GitHub/GitLab webhooks. These pipelines build, test, and sign your container images automatically.
+====
+
+== Exercise 3: Configure release settings
+
+In this exercise, you will configure release settings so your application can be deployed after builds.
+
+[NOTE]
+====
+Release configuration requires cluster-admin access. This step simulates what a platform engineer would do to enable releases for developers.
+====
+
+=== Create release configuration
+
+For this workshop, we'll use a simplified approach. In a production environment, you would create ReleasePlan and ReleaseStrategy custom resources.
+
+. Create a basic release plan (run this from your {OCPCli} terminal):
++
+[source,role="execute"]
+----
+cat <<EOF | oc apply -f -
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: ReleasePlan
+metadata:
+  name: my-first-app-plan
+  namespace: default
+spec:
+  application: my-first-app
+  target: default
+EOF
+----
+
+. Verify the release plan was created:
++
+[source,role="execute"]
+----
+oc get releaseplan my-first-app-plan -n default
+----
+
+=== Verify
+
+✓ ReleasePlan created for your application +
+✓ Release configuration complete +
+
+[TIP]
+====
+In production, release plans can target different environments (dev, staging, prod) and include approval gates, policy checks, and deployment strategies.
+====
+
+== Exercise 4: Trigger the build pipeline
+
+In this exercise, you will trigger your first secure build by merging the Konflux pull request.
+
+=== Merge the pull request
+
+. Go back to your GitHub repository.
+
+. Open the Konflux pull request.
+
+. Click **Merge pull request**.
+
+. Click **Confirm merge**.
+
+=== Watch the pipeline run
+
+. Return to the Konflux UI.
+
+. Navigate to your application → Components.
+
+. You should see your component with:
+** **Build status:** In Progress
+** **Pipeline run:** Active
+
+. Click on the component name to see details.
+
+. Click on the pipeline run to watch it execute in real-time.
+
+=== Understand the build process
+
+The pipeline performs these steps:
+
+. **Clone** -- Fetches source code from Git
+. **Build** -- Builds container image using Dockerfile
+. **Sign** -- Signs image with {RHTASName} (Fulcio certificate)
+. **Generate SBOM** -- Creates Software Bill of Materials
+. **Scan** -- Scans image for vulnerabilities
+. **Push** -- Pushes signed image to Quay
+. **Integration tests** -- Runs automated tests against the image
+
+=== Wait for completion
+
+. The pipeline takes approximately 5-10 minutes to complete.
+
+. When finished, you should see:
+** **Build status:** Succeeded (green checkmark)
+** **Image:** Link to Quay repository
+** **Signature:** Verified
+
+=== Verify
+
+✓ Pull request merged successfully +
+✓ Pipeline triggered automatically +
+✓ Build completed successfully +
+✓ Image pushed to Quay +
+
+== Exercise 5: Verify the signed image
+
+In this exercise, you will verify that your container image was signed with {RHTASName} and has SLSA Level 3 provenance.
+
+=== View the image in Quay
+
+. From the Konflux UI, click the **Image** link in your component.
+
+. You will be redirected to Quay showing your new repository and image.
+
+. Note the image tag (typically a git commit SHA).
+
+=== View signature with cosign
+
+. From your terminal, verify the image signature using cosign:
++
+[source,role="execute"]
+----
+cosign tree quay.io/<your-org>/<component-name>:<tag>
+----
++
+Expected output:
++
+----
+📦 quay.io/your-org/sample-component-golang:abc123
+├── 💾 attestations
+│   └── <sha256 digest>
+└── 🔐 signatures
+    └── <sha256 digest>
+----
+
+. View the signature details:
++
+[source,role="execute"]
+----
+cosign verify quay.io/<your-org>/<component-name>:<tag> \
+  --certificate-identity-regexp '.*' \
+  --certificate-oidc-issuer-regexp '.*'
+----
+
+=== Understand SLSA provenance
+
+SLSA (Supply-chain Levels for Software Artifacts) is a framework for ensuring artifact integrity.
+
+Your build produces **SLSA Level 3 provenance** which records:
+
+* **Who** built the image (build system identity)
+* **When** it was built (timestamp)
+* **How** it was built (pipeline definition, steps)
+* **What** source code was used (Git commit SHA)
+
+This provenance is signed and attached to the image, providing an immutable audit trail.
+
+=== Verify
+
+✓ Image visible in Quay registry +
+✓ Image has cryptographic signature +
+✓ Signature verified with cosign +
+✓ SLSA provenance attached to image +
+
+== Exercise 6: Analyze the SBOM
+
+In this exercise, you will view the Software Bill of Materials and vulnerability report generated by {RHTPAName}.
+
+=== Access RHTPA UI
+
+. Open the {RHTPAName} UI in your browser:
++
+[source,bash]
+----
+echo "https://$RHTPA_URL"
+----
+
+. Authenticate with your {OCPName} credentials (same as Konflux).
+
+=== View SBOM
+
+. In the RHTPA UI, navigate to **SBOMs** or **Components**.
+
+. Find your component: `sample-component-golang`
+
+. Click on the component to view its SBOM.
+
+. The SBOM shows:
+** **All packages** included in the image
+** **Dependencies** and their versions
+** **Licenses** for each component
+** **Package sources** (Go modules, OS packages, etc.)
+
+=== View vulnerabilities
+
+. Click on the **Vulnerabilities** tab.
+
+. You should see a list of known CVEs affecting packages in your image.
+
+. For each vulnerability:
+** **CVE ID** -- Common Vulnerabilities and Exposures identifier
+** **Severity** -- Critical, High, Medium, Low
+** **Affected package** -- Which package has the vulnerability
+** **Fixed version** -- Version that fixes the issue
+
+=== Understand the value
+
+The SBOM and vulnerability data allow TechCorp to:
+
+* **Track** all software in their supply chain
+* **Identify** vulnerable components quickly
+* **Remediate** by updating to patched versions
+* **Comply** with security policies and regulations
+
+=== Verify
+
+✓ Accessed RHTPA UI successfully +
+✓ Viewed SBOM for your component +
+✓ Identified packages and dependencies +
+✓ Reviewed vulnerability scan results +
+
+== Exercise 7: View the release
+
+In this exercise, you will view the automated release created after your build succeeded.
+
+=== Access releases tab
+
+. Return to the Konflux UI.
+
+. Navigate to **Releases** in the left menu.
+
+. You should see a release for your application:
+** **Application:** my-first-app
+** **Component:** sample-component-golang
+** **Status:** Succeeded
+** **Target:** Quay
+
+=== View release details
+
+. Click on the release to view details:
+** **Image:** Full image reference in Quay
+** **Signature:** Verification status
+** **Tests:** Integration test results
+** **Provenance:** SLSA attestation
+
+. The release confirms that:
+** Build completed successfully
+** Image was signed with {RHTASName}
+** Integration tests passed
+** Image was pushed to Quay
+
+=== Verify
+
+✓ Release created automatically after build +
+✓ Release shows image, signature, and tests +
+✓ All verification checks passed +
+
+== Learning outcomes
+
+Let's verify what you've accomplished in this module:
+
+* ✓ You created an application in Konflux
+* ✓ You onboarded a component from a Git repository
+* ✓ You merged Konflux's pull request to enable pipelines
+* ✓ You triggered an automated build pipeline
+* ✓ You verified the signed container image with cosign
+* ✓ You viewed SLSA Level 3 provenance
+* ✓ You analyzed the SBOM and vulnerability scan in RHTPA
+* ✓ You viewed the automated release
+
+== Summary
+
+In this module, you successfully built your first secure application with {TSFShortName}:
+
+* Created an application and added a component from Git
+* Triggered a build pipeline that automatically signed the image
+* Verified cryptographic signatures and SLSA provenance
+* Analyzed the SBOM and vulnerability report
+* Viewed the automated release to Quay
+
+You now have a complete secure software supply chain in action!
+
+== Next steps
+
+Now that you've completed the workshop, consider:
+
+* **Onboarding your own applications** -- Replace the sample component with your actual projects
+* **Customizing pipelines** -- Edit `.tekton/` files to add custom build steps
+* **Implementing policies** -- Use Conforma to enforce security policies
+* **Configuring multi-environment releases** -- Set up dev, staging, and prod targets
+* **Automating deployments** -- Integrate with ArgoCD or OpenShift GitOps
+
+Click *Next* for the workshop conclusion and troubleshooting guide.
