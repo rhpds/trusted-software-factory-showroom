@@ -18,9 +18,9 @@ In this workshop, you will learn how to deploy and use {TSFName}, a secure softw
 This workshop is designed for platform engineers, DevSecOps practitioners, and developers who want to implement secure software supply chain practices on {OCPName}. You should have:
 
 * Basic knowledge of {OCPName} and Kubernetes concepts
-* Familiarity with CI/CD pipelines (Tekton/Jenkins)
+* Familiarity with CI/CD pipelines (Tekton)
 * Understanding of container images and registries
-* Experience with Git workflows
+* Experience with GitHub/GitLab workflows
 
 == What is {TSFName}?
 

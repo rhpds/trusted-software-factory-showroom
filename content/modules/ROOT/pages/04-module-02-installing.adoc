@@ -141,38 +141,10 @@ oc get configmap tsf-config -n tsf -o yaml
 +
 You should see a ConfigMap containing component definitions for Cert-Manager, Konflux, Keycloak, Pipelines, RHTAS, RHTPA, Quay, and Storage.
 
-=== Check for existing Cert-Manager
-
-. Check if Cert-Manager is already installed on your cluster.
-+
-[source,role="execute"]
-----
-oc get subscription openshift-cert-manager-operator -n cert-manager-operator 2>/dev/null || echo "Cert-Manager not found"
-----
-
-. If Cert-Manager already exists, you need to disable the managed subscription.
-+
-Edit the ConfigMap:
-+
-[source,role="execute"]
-----
-oc edit configmap tsf-config -n tsf
-----
-+
-Find the Cert-Manager component and change `manageSubscription: true` to `manageSubscription: false`.
-
-. Verify the change.
-+
-[source,role="execute"]
-----
-oc get configmap tsf-config -n tsf -o yaml | grep -A5 cert-manager
-----
-
 === Verify
 
 ✓ ConfigMap `tsf-config` created in `tsf` namespace +
 ✓ Configuration contains all component definitions +
-✓ Cert-Manager subscription conflict resolved (if applicable) +
 
 == Exercise 4: Configure GitHub integration
 
@@ -189,7 +161,11 @@ In this exercise, you will create a GitHub App for integration with {TSFShortNam
 +
 [source,role="execute"]
 ----
-tsf integration github --create --org "$GITHUB__ORG" "techcorp-tsf-app"
+tsf integration github \
+  --create \
+  --org "$GITHUB__ORG" \
+  --verbose \
+  "techcorp-tsf-app"
 ----
 +
 Replace `techcorp-tsf-app` with a name for your GitHub App.
@@ -235,15 +211,18 @@ GitHub App created and installed successfully.
 
 === Verify
 
+. Verify that the GitHub integration secret exists in the `tsf` namespace.
++
+[source,role="execute"]
+----
+oc get secret tsf-github-integration -n tsf
+----
+
+✓ Integration command completed successfully +
+✓ Secret `tsf-github-integration` present in `tsf` namespace +
 ✓ GitHub App created with correct name +
 ✓ App installed on your organization +
 ✓ Webhook URL configured to point to cluster +
-✓ Integration command completed successfully +
-
-[TIP]
-====
-If your browser fails to open automatically, manually copy the localhost:8228 URL from the terminal output.
-====
 
 == Exercise 5: Configure GitLab integration (alternative)
 
@@ -254,48 +233,30 @@ Complete this exercise only if you are using GitLab instead of GitHub.
 
 In this exercise, you will configure GitLab integration using your Project Access Token.
 
-=== Create GitLab secret
+=== Run GitLab integration
 
-. Create a Kubernetes secret containing your GitLab token.
+. Configure the GitLab integration (variables come from `tsf.env`).
 +
 [source,role="execute"]
 ----
-oc create secret generic gitlab-auth-secret \
-  -n tsf \
-  --from-literal=password="$GITLAB__TOKEN" \
-  --type=kubernetes.io/basic-auth
-----
-
-. Label the secret for {TSFShortName} recognition.
-+
-[source,role="execute"]
-----
-oc label secret gitlab-auth-secret \
-  -n tsf \
-  appstudio.redhat.com/credentials=scm
-----
-
-. Annotate the secret with your GitLab host.
-+
-[source,role="execute"]
-----
-oc annotate secret gitlab-auth-secret \
-  -n tsf \
-  appstudio.redhat.com/scm.host="$GITLAB__HOST"
-----
-
-. Verify the secret was created correctly.
-+
-[source,role="execute"]
-----
-oc get secret gitlab-auth-secret -n tsf -o yaml
+tsf integration gitlab \
+  --group="$GITLAB__GROUP" \
+  --host="$GITLAB__HOST" \
+  --token="$GITLAB__TOKEN" \
+  --verbose
 ----
 
 === Verify
 
-✓ Secret `gitlab-auth-secret` created in `tsf` namespace +
-✓ Secret has correct label for SCM credentials +
-✓ Secret annotated with GitLab host +
+. Verify that the GitLab integration secret exists in the `tsf` namespace.
++
+[source,role="execute"]
+----
+oc get secret tsf-gitlab-integration -n tsf
+----
+
+✓ GitLab integration command completed successfully +
+✓ Secret `tsf-gitlab-integration` present in `tsf` namespace +
 
 == Exercise 6: Configure Quay integration
 
@@ -310,7 +271,8 @@ In this exercise, you will configure Quay registry integration using your OAuth 
 tsf integration quay \
   --organization="$QUAY__ORG" \
   --token="$QUAY__API_TOKEN" \
-  --url="$QUAY__URL"
+  --url="$QUAY__URL" \
+  --verbose
 ----
 +
 Expected output:
@@ -343,9 +305,9 @@ oc get secret tsf-quay-integration -n tsf -o yaml
 
 === Verify
 
-✓ Quay integration secret created +
+✓ GitLab integration command completed successfully +
+✓ Secret `tsf-quay-integration` present in `tsf` namespace +
 ✓ Secret contains organization, token, and URL +
-✓ Secret exists in `tsf` namespace +
 
 == Exercise 7: Deploy {TSFShortName}
 
@@ -449,23 +411,16 @@ oc delete secret tsf-quay-integration -n tsf
 tsf integration quay \
   --organization="$QUAY__ORG" \
   --token="$QUAY__API_TOKEN" \
-  --url="$QUAY__URL"
+  --url="$QUAY__URL" \
+  --verbose
 ----
 
-. Restart deployment:
+. Re-run the deployment:
 +
 [source,bash]
 ----
 tsf deploy
 ----
-
-=== Issue: Browser fails during GitHub integration
-
-**Problem:** Command logs error about missing "xdg-open" executable
-
-**Solution:**
-
-The installer container lacks graphical browser capability. Manually copy the localhost:8228 URL from the terminal and open it in your browser.
 
 === Issue: Deployment appears to hang
 

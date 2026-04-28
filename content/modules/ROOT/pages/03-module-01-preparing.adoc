@@ -106,6 +106,8 @@ This workshop uses GitHub. If you prefer GitLab, skip to Exercise 3.
 
 . Create a new organization or identify an existing organization where you have administrative access.
 +
+If you need a new organization, see link:https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch[Creating a new organization from scratch^] in the GitHub documentation.
++
 [TIP]
 ====
 For this workshop, you can create a free organization specifically for testing {TSFShortName}.
@@ -158,6 +160,7 @@ This exercise is an alternative to Exercise 2. Complete this only if you are usi
 === Verify
 
 ✓ GitLab instance hostname noted +
+✓ GitLab group name noted +
 ✓ Project Access Token created and saved +
 ✓ Token has Maintainer role with required scopes +
 
@@ -246,11 +249,11 @@ If you are using GitHub, create a file named `tsf.env` with the following conten
 ----
 GITHUB__ORG=<your_github_organization>
 OCP__API_ENDPOINT=<your_cluster_api_url>
-OCP__USERNAME=<cluster_admin_username>
-OCP__PASSWORD=<cluster_admin_password>
-QUAY__ORG=<your_quay_organization>
+OCP__USERNAME=<your_cluster_admin_username>
+OCP__PASSWORD=<your_cluster_admin_password>
 QUAY__API_TOKEN=<your_quay_oauth_token>
-QUAY__URL=https://quay.io
+QUAY__ORG=<your_quay_organization>
+QUAY__URL=<your_quay_url>
 ----
 
 Replace the placeholders with your actual values.
@@ -261,14 +264,15 @@ If you are using GitLab, create a file named `tsf.env` with the following conten
 
 [source,bash]
 ----
-GITLAB__HOST=<gitlab_hostname>
-GITLAB__TOKEN=<your_gitlab_project_access_token>
+GITLAB__HOST=gitlab.com
+GITLAB__GROUP=<your_gitlab_group>
+GITLAB__TOKEN=glpat-xxxx
 OCP__API_ENDPOINT=<your_cluster_api_url>
-OCP__USERNAME=<cluster_admin_username>
-OCP__PASSWORD=<cluster_admin_password>
-QUAY__ORG=<your_quay_organization>
+OCP__USERNAME=<your_cluster_admin_username>
+OCP__PASSWORD=<your_cluster_admin_password>
 QUAY__API_TOKEN=<your_quay_oauth_token>
-QUAY__URL=https://quay.io
+QUAY__ORG=<your_quay_organization>
+QUAY__URL=<your_quay_url>
 ----
 
 Replace the placeholders with your actual values.
@@ -283,8 +287,8 @@ GITHUB__ORG=techcorp-industries
 OCP__API_ENDPOINT=https://api.cluster-abc123.ocpv00.rhdp.net:6443
 OCP__USERNAME=kubeadmin
 OCP__PASSWORD=S3cur3P@ssw0rd
-QUAY__ORG=techcorp-images
 QUAY__API_TOKEN=abcd1234efgh5678ijkl9012mnop3456
+QUAY__ORG=techcorp-images
 QUAY__URL=https://quay.io
 ----
 

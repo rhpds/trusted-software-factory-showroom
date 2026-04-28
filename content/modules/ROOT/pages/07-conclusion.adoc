@@ -112,7 +112,8 @@ oc delete secret tsf-quay-integration -n tsf
 tsf integration quay \
   --organization="$QUAY__ORG" \
   --token="$QUAY__API_TOKEN" \
-  --url="$QUAY__URL"
+  --url="$QUAY__URL" \
+  --verbose
 ----
 
 . Restart deployment:
@@ -121,31 +122,6 @@ tsf integration quay \
 ----
 tsf deploy
 ----
-
-=== Issue: Cert-Manager subscription conflict
-
-**Problem:** Deployment fails due to subscription conflict for Cert-Manager operator
-
-**Root cause:** Red Hat Cert-Manager Operator already installed on cluster
-
-**Solution:**
-
-Edit the `tsf-config` ConfigMap and change Cert-Manager's `manageSubscription` from `true` to `false`:
-
-[source,role="execute"]
-----
-oc edit configmap tsf-config -n tsf
-----
-
-Find the Cert-Manager component section and modify:
-[source,yaml]
-----
-cert-manager:
-  enabled: true
-  manageSubscription: false  # Change this from true to false
-----
-
-Save and restart deployment.
 
 === Issue: RHTPA UI URL inaccessible
 
