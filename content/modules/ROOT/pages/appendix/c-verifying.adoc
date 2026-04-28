@@ -1,8 +1,8 @@
-= Module 3: Verifying and accessing
+= Appendix C: Verifying and accessing
 
 == Learning objectives
 
-By the end of this module, you will be able to:
+By the end of this appendix, you will be able to:
 
 * Verify successful deployment of all {TSFShortName} components
 * Access the Konflux UI and authenticate with Keycloak
@@ -12,7 +12,7 @@ By the end of this module, you will be able to:
 
 == Introduction
 
-With {TSFShortName} deployed, you need to verify that all components are running correctly and accessible. In this module, you will check each component, access the Konflux UI, and explore the architecture that TechCorp Industries now has in place for their secure software supply chain.
+With {TSFShortName} deployed, you need to verify that all components are running correctly and accessible. In this appendix, you will check each component, access the Konflux UI, and explore the architecture that TechCorp Industries now has in place for their secure software supply chain.
 
 == Exercise 1: Verify deployed namespaces
 
@@ -362,7 +362,7 @@ Review the following statements:
 
 == Learning outcomes
 
-Let's verify what you've accomplished in this module:
+Let's verify what you've accomplished in this appendix:
 
 * ✓ You verified all required namespaces were created
 * ✓ You confirmed all operators are running correctly
@@ -373,7 +373,7 @@ Let's verify what you've accomplished in this module:
 
 == Summary
 
-In this module, you verified your {TSFShortName} deployment:
+In this appendix, you verified your {TSFShortName} deployment:
 
 * Checked all namespaces and operator pods
 * Accessed the Konflux UI and authenticated with Keycloak
@@ -382,4 +382,4 @@ In this module, you verified your {TSFShortName} deployment:
 
 Your {TSFShortName} deployment is verified and ready to use!
 
-Click *Next* to continue to Module 4 and build your first secure application.
+Click *Next* to continue to xref:04-module-02-getting-started.adoc[Module 2: Getting started with Konflux] and build your first secure application.

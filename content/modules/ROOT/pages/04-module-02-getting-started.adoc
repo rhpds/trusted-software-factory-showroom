@@ -1,4 +1,4 @@
-= Module 4: Getting started with Konflux
+= Module 2: Getting started with Konflux
 
 == Learning objectives
 
@@ -14,7 +14,7 @@ By the end of this module, you will be able to:
 
 == Introduction
 
-Now that {TSFShortName} is deployed and verified, you're ready to build your first secure application. In this module, you will use the Konflux UI to create an application, onboard a component from GitHub, and trigger a complete build-sign-release workflow.
+In this module, you will use the Konflux UI to create an application, onboard a component from GitLab, and trigger a complete build-sign-release workflow.
 
 This is where TechCorp's platform engineering work pays off -- developers can now build secure, signed container images automatically!
 
@@ -72,19 +72,7 @@ In this exercise, you will onboard your first component by connecting a Git repo
 
 === Prepare the sample repository
 
-For this workshop, you will use the Konflux sample component repository.
-
-==== GitHub repository
-
-. Fork the sample repository to your GitHub organization:
-+
-link:https://github.com/konflux-ci/sample-component-golang[https://github.com/konflux-ci/sample-component-golang^]
-+
-Or use the repository directly (read-only).
-
-==== GitLab repository
-
-If you used the TSF catalog item, a sample repository is available in the tsf group of the local GitLab repository.
+For this workshop, you will use the Konflux sample component repository available in the tsf group of the local GitLab repository.
 
 === Add component in Konflux
 
@@ -93,13 +81,9 @@ If you used the TSF catalog item, a sample repository is available in the tsf gr
 . Enter your Git repository URL:
 +
 ----
-https://<github_or_gitlab_fqdn>/<your-org>/sample-component-golang
+https://<gitlab_fqdn>/<your-org>/sample-component-golang
 ----
 +
-Or use the sample directly:
-+
-----
-https://github.com/konflux-ci/sample-component-golang
 ----
 
 . Select the branch to build (default: `main`).
@@ -111,7 +95,7 @@ https://github.com/konflux-ci/sample-component-golang
 
 . Click **Create component**.
 
-For GitLab, the webhook is created and configured in the repository.
+The webhook is created and configured in the GitLab repository.
 
 === Understand what happens
 
@@ -127,13 +111,13 @@ When you create a component, Konflux automatically:
 *Do not merge the pull request yet!* You need to configure release settings first.
 ====
 
-=== View the pull request
+=== View the merge request
 
-. Go to your GitHub repository (if you forked it).
+. Go to your GitLab repository.
 
-. Click **Pull requests**.
+. Click **Merge requests**.
 
-. You should see a pull request from Konflux adding `.tekton/` directory:
+. You should see a merge request from Konflux adding `.tekton/` directory:
 +
 ----
 Title: Add Konflux pipeline definitions
@@ -145,13 +129,13 @@ Files changed: .tekton/pull-request.yaml, .tekton/push.yaml
 === Verify
 
 ✓ Component created in Konflux +
-✓ Pull request sent to GitHub repository +
+✓ Merge request sent to GitLab repository +
 ✓ `.tekton/` directory added with pipeline definitions +
 ✓ Pipeline files visible in PR +
 
 [TIP]
 ====
-The `.tekton/` directory contains Tekton PipelineRun definitions that are triggered by GitHub/GitLab webhooks. These pipelines build, test, and sign your container images automatically.
+The `.tekton/` directory contains Tekton PipelineRun definitions that are triggered by the GitLab webhook. These pipelines build, test, and sign your container images automatically.
 ====
 
 == Exercise 3: Configure release settings
@@ -441,4 +425,4 @@ Now that you've completed the workshop, consider:
 * **Configuring multi-environment releases** -- Set up dev, staging, and prod targets
 * **Automating deployments** -- Integrate with ArgoCD or OpenShift GitOps
 
-Click *Next* for the workshop conclusion and troubleshooting guide.
+Click *Next* for the workshop conclusion. For help with issues, see xref:appendix/d-troubleshooting.adoc[Appendix D: Troubleshooting].

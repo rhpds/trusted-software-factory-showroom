@@ -1,8 +1,8 @@
-= Module 2: Installing {TSFShortName}
+= Appendix B: Installing {TSFShortName}
 
 == Learning objectives
 
-By the end of this module, you will be able to:
+By the end of this appendix, you will be able to:
 
 * Run the {TSFShortName} installer container with Podman
 * Login to your {OCPName} cluster from within the container
@@ -13,9 +13,9 @@ By the end of this module, you will be able to:
 
 == Introduction
 
-Now that your environment is prepared, you're ready to install {TSFShortName}. The installation uses a containerized installer that includes the `{TSFCli}` CLI tool. This tool orchestrates the deployment of nine Helm charts that create all the components of the secure software supply chain.
+Now that your environment is prepared (xref:appendix/a-preparing.adoc[Appendix A] or xref:03-module-01-preparing.adoc[Module 1]), you're ready to install {TSFShortName}. The installation uses a containerized installer that includes the `{TSFCli}` CLI tool. This tool orchestrates the deployment of nine Helm charts that create all the components of the secure software supply chain.
 
-In this module, you will run the installer, configure integrations, and deploy {TSFShortName} to your cluster.
+In this appendix, you will run the installer, configure integrations, and deploy {TSFShortName} to your cluster.
 
 == Exercise 1: Start the installer container
 
@@ -305,7 +305,7 @@ oc get secret tsf-quay-integration -n tsf -o yaml
 
 === Verify
 
-✓ GitLab integration command completed successfully +
+✓ Quay integration command completed successfully +
 ✓ Secret `tsf-quay-integration` present in `tsf` namespace +
 ✓ Secret contains organization, token, and URL +
 
@@ -374,7 +374,7 @@ Konflux UI: https://konflux-ui-konflux-ui.apps.cluster-abc123.ocpv00.rhdp.net
 RHTPA UI: https://rhtpa-ui-tsf-tpa.apps.cluster-abc123.ocpv00.rhdp.net
 ----
 
-. Note the URLs -- you will need them in the next module.
+. Note the URLs -- you will need them in xref:appendix/c-verifying.adoc[Appendix C].
 
 === Verify
 
@@ -385,62 +385,14 @@ RHTPA UI: https://rhtpa-ui-tsf-tpa.apps.cluster-abc123.ocpv00.rhdp.net
 
 [TIP]
 ====
-If the deployment appears to hang, it may be pulling large container images. Check pod status with `oc get pods -A` in another terminal.
+If `tsf deploy` looks idle, large image pulls may still be in progress. See xref:appendix/d-troubleshooting.adoc#install-tsf-deploy[Appendix D, Installation and tsf deploy] for what to expect and how to monitor.
 ====
 
-== Troubleshooting
-
-=== Issue: Quay token error
-
-**Problem:** Deploy command fails with "token field not found in secret"
-
-**Solution:**
-
-. Verify your Quay token is valid by logging in to Quay.
-. Delete the secret:
-+
-[source,bash]
-----
-oc delete secret tsf-quay-integration -n tsf
-----
-
-. Re-run the Quay integration command:
-+
-[source,bash]
-----
-tsf integration quay \
-  --organization="$QUAY__ORG" \
-  --token="$QUAY__API_TOKEN" \
-  --url="$QUAY__URL" \
-  --verbose
-----
-
-. Re-run the deployment:
-+
-[source,bash]
-----
-tsf deploy
-----
-
-=== Issue: Deployment appears to hang
-
-**Problem:** Deploy command runs without output for several minutes
-
-**Solution:**
-
-. This is normal -- Helm chart deployment can take time.
-. Monitor progress separately:
-+
-[source,bash]
-----
-oc get pods -A --watch
-----
-
-. Typical completion time is 15 minutes.
+If you hit other failures during install or deploy, use xref:appendix/d-troubleshooting.adoc[Appendix D: Troubleshooting] as the single reference for known issues and fixes.
 
 == Learning outcomes
 
-Let's verify what you've accomplished in this module:
+Let's verify what you've accomplished in this appendix:
 
 * ✓ You started the {TSFShortName} installer container with Podman
 * ✓ You authenticated to your {OCPName} cluster from the container
@@ -452,7 +404,7 @@ Let's verify what you've accomplished in this module:
 
 == Summary
 
-In this module, you successfully installed {TSFShortName} on your {OCPName} cluster:
+In this appendix, you successfully installed {TSFShortName} on your {OCPName} cluster:
 
 * Started the containerized installer with your configuration
 * Created cluster configuration and verified prerequisites
@@ -462,4 +414,4 @@ In this module, you successfully installed {TSFShortName} on your {OCPName} clus
 
 The secure software supply chain is now deployed and ready for verification!
 
-Click *Next* to continue to Module 3 and verify your deployment.
+Click *Next* to continue to xref:appendix/c-verifying.adoc[Appendix C: Verifying and accessing].
