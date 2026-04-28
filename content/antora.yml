@@ -29,4 +29,5 @@ asciidoc:
     bastion_ssh_password: password
     ssh_user: lab-user
     openshift_console_url: https://console-openshift-console.apps.cluster-abc123.ocpv00.rhdp.net
+    openshift_api_url: https://api.cluster-abc123.ocpv00.rhdp.net:6443
     openshift_cluster_ingress_domain: apps.cluster-abc123.ocpv00.rhdp.net

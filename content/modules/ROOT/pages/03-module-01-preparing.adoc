@@ -23,9 +23,11 @@ In this exercise, you will verify that your {OCPName} cluster meets the requirem
 
 . Login to your {OCPName} cluster using the {OCPCli} CLI.
 +
+Use your cluster Kubernetes API endpoint (typically `https://api.<cluster>:6443`; it matches `{openshift_api_url}` in this workshop and aligns with `OCP__API_ENDPOINT` for the installer shell).
++
 [source,role="execute"]
 ----
-oc login {openshift_console_url}
+oc login {openshift_api_url}
 ----
 
 . Check the cluster version to ensure it meets the minimum requirement.
