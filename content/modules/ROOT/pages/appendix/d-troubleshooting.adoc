@@ -1,0 +1,105 @@
+= Appendix D: Troubleshooting
+
+This appendix is the single place for known issues when you run xref:appendix/b-installing.adoc[Appendix B: Installing {TSFShortName}] (installer, `{TSFCli}`, `tsf deploy`) and when you work through xref:04-module-02-getting-started.adoc[Module 2: Getting started with Konflux] (pipelines, webhooks, registry pushes from builds).
+
+[[install-tsf-deploy]]
+== Installation and `{TSFCli}` deploy
+
+Scenarios that surface while you are inside the installer container running `{TSFCli}`—for example after xref:appendix/b-installing.adoc[Appendix B] exercises.
+
+=== Issue: Quay token error during deployment
+
+**Problem:** The `tsf deploy` command fails with "token field not found in secret"
+
+**Solution:**
+
+. Verify your Quay token is valid by logging in to Quay.
+. Delete the secret:
++
+[source,bash]
+----
+oc delete secret tsf-quay-integration -n tsf
+----
+
+. Re-run the Quay integration command:
++
+[source,bash]
+----
+tsf integration quay \
+  --organization="$QUAY__ORG" \
+  --token="$QUAY__API_TOKEN" \
+  --url="$QUAY__URL" \
+  --verbose
+----
+
+. Re-run the deployment:
++
+[source,bash]
+----
+tsf deploy
+----
+
+=== Issue: `tsf deploy` runs a long time or prints little output
+
+**Problem:** The deploy command runs without output for several minutes, or you are unsure whether it has stalled
+
+**Likely causes:** Normal Helm processing and large image pulls (for example Keycloak, {RHTPAName})
+
+**Solution:**
+
+. This is often expected—Helm chart deployment can take time.
+. Monitor progress separately:
++
+[source,bash]
+----
+oc get pods -A --watch
+----
+
+. Typical completion time is about 15 minutes.
+
+[[konflux-pipelines]]
+== Konflux pipelines and onboarding
+
+These tips match the hands-on modules: slow or stuck pipeline runs, push failures from a *build*, and missing webhooks.
+
+=== Issue: Pipeline run is slow or appears stuck
+
+**Problem:** Builds sit *In Progress* for many minutes after merging the onboarding pull request
+
+**Likely causes:** Cold cache, registry pulls, vulnerability scans, signing steps
+
+**Ideas:**
+
+. Open the PipelineRun logs in Konflux so you see which TaskRun is executing
+. Allow roughly 10–15 minutes for a first pipeline on a warmed cluster—longer on smaller clusters or first-time image pulls
+. Start from the Konflux UI before escalating to `{OCPCli}`; what you may inspect on the cluster depends on your RBAC
+
+=== Issue: Konflux pipeline cannot push the image to Quay
+
+**Problem:** Build pipeline succeeds but pushing the image to Quay fails
+
+**Likely causes:** Wrong organization or repository, insufficient permissions for pushes, registry quota limits, or stale credentials on the cluster side your workspace relies on.
+
+**Ideas:**
+
+. Confirm the Quay organization and repository your component targets actually exist under the lab's registry hostname
+. If you administer the tenant, reconcile registry credentials against your cluster or operator documentation (`{TSFShortName}`, Konflux, or your organization's runbook)—otherwise ask your platform team to verify workspace-level registry integration
+
+=== Issue: Component not triggering builds
+
+**Problem:** Merged PR but pipeline never runs
+
+**Root cause:** Webhook not configured or not reaching cluster
+
+**Solution:**
+
+. Check webhook configuration in GitHub/GitLab
+. Verify cluster is publicly accessible
+. Check Tekton EventListener:
++
+[source,role="execute"]
+----
+oc get eventlistener -A
+----
+
+. Check recent webhook deliveries in GitHub/GitLab settings

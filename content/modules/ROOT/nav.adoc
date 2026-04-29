@@ -6,9 +6,13 @@
 
 .Hands-on Modules
 * xref:03-module-01-preparing.adoc[Module 1: Preparing to Install]
-* xref:04-module-02-installing.adoc[Module 2: Installing TSF]
-* xref:05-module-03-verifying.adoc[Module 3: Verifying and Accessing]
-* xref:06-module-04-getting-started.adoc[Module 4: Getting Started with Konflux]
+* xref:04-module-02-getting-started.adoc[Module 2: Getting Started with Konflux]
+
+.Appendix
+* xref:appendix/a-preparing.adoc[Appendix A: Preparing to install]
+* xref:appendix/b-installing.adoc[Appendix B: Installing TSF]
+* xref:appendix/c-verifying.adoc[Appendix C: Verifying and accessing]
+* xref:appendix/d-troubleshooting.adoc[Appendix D: Troubleshooting]
 
 .Wrap-up
 * xref:07-conclusion.adoc[Conclusion]

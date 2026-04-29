@@ -1,0 +1,351 @@
+= Appendix A: Preparing to install
+
+== Learning objectives
+
+By the end of this appendix, you will be able to:
+
+* Understand the {TSFShortName} architecture and components
+* Verify cluster readiness for {TSFShortName} installation
+* Create required accounts in GitHub/GitLab and Quay
+* Generate access tokens and credentials
+* Create the environment configuration file (`tsf.env`)
+
+== Introduction
+
+Before installing {TSFShortName}, you need to prepare your {OCPName} cluster and configure integrations with external services. This appendix walks you through validating cluster prerequisites, setting up accounts, and creating the configuration file that the installer will use.
+
+[NOTE]
+====
+These exercises duplicate xref:03-module-01-preparing.adoc[Module 1: Preparing to install]; use whichever path fits your agenda. If you already completed Module 1 in the workshop, you can xref:appendix/b-installing.adoc[Appendix B: Installing {TSFShortName}] when your `tsf.env` is ready.
+====
+
+Think of this as *TechCorp's platform engineering team* gathering all the credentials and access needed before deploying the secure software supply chain.
+
+== Exercise 1: Verify cluster prerequisites
+
+In this exercise, you will verify that your {OCPName} cluster meets the requirements for {TSFShortName} installation.
+
+=== Verify cluster version
+
+. Login to your {OCPName} cluster using the {OCPCli} CLI.
++
+Use your cluster Kubernetes API endpoint (typically `https://api.<cluster>:6443`; it matches `{openshift_api_url}` in this workshop and aligns with `OCP__API_ENDPOINT` in `tsf.env`).
++
+[source,role="execute"]
+----
+oc login {openshift_api_url}
+----
+
+. Check the cluster version to ensure it meets the minimum requirement.
++
+[source,role="execute"]
+----
+oc version
+----
++
+Expected output:
++
+----
+Client Version: 4.20.x
+Kubernetes Version: v1.33.x
+Server Version: 4.20.x
+----
+
+=== Verify cluster topology
+
+. Check the number of nodes in your cluster.
++
+[source,role="execute"]
+----
+oc get nodes
+----
++
+Expected output:
++
+----
+NAME                                         STATUS   ROLES                  AGE   VERSION
+master-0.cluster-abc123.ocpv00.rhdp.net     Ready    control-plane,master   5d    v1.33.4
+master-1.cluster-abc123.ocpv00.rhdp.net     Ready    control-plane,master   5d    v1.33.4
+master-2.cluster-abc123.ocpv00.rhdp.net     Ready    control-plane,master   5d    v1.33.4
+----
+
+. Verify you have cluster-admin privileges.
++
+[source,role="execute"]
+----
+oc whoami
+----
++
+[source,role="execute"]
+----
+oc auth can-i '*' '*'
+----
++
+Expected output:
++
+----
+yes
+----
+
+=== Verify
+
+✓ Cluster is running {OCPName} {OCPVersion} or later +
+✓ Cluster has 3 or more nodes (not Single Node OpenShift) +
+✓ You have cluster-admin access +
+
+[TIP]
+====
+If your cluster has existing production workloads, consider using a dedicated cluster for {TSFShortName}. The installer deploys many components and is designed for fresh clusters.
+====
+
+== Exercise 2: Set up GitHub integration
+
+In this exercise, you will prepare a GitHub organization for integration with {TSFShortName}.
+
+[NOTE]
+====
+This workshop uses GitHub. If you prefer GitLab, skip to Exercise 3.
+====
+
+=== Create or identify GitHub organization
+
+. Go to link:https://github.com[GitHub^] and sign in.
+
+. Create a new organization or identify an existing organization where you have administrative access.
++
+If you need a new organization, see link:https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch[Creating a new organization from scratch^] in the GitHub documentation.
++
+[TIP]
+====
+For this workshop, you can create a free organization specifically for testing {TSFShortName}.
+====
+
+. Note your organization name -- you will need it later.
+
+=== Verify GitHub connectivity
+
+Your {OCPName} cluster must be able to receive webhooks from GitHub. This requires:
+
+* Publicly accessible cluster ingress (not behind a firewall)
+* Network path from github.com to your cluster
+
+The installer will configure a GitHub App that sends webhook events to your cluster when code is pushed or pull requests are created.
+
+=== Verify
+
+✓ GitHub organization exists and you have admin access +
+✓ Organization name noted for later use +
+✓ Cluster is reachable from the internet for webhooks +
+
+== Exercise 3: Set up GitLab integration (alternative)
+
+[NOTE]
+====
+This exercise is an alternative to Exercise 2. Complete this only if you are using GitLab instead of GitHub.
+====
+
+=== Identify GitLab instance
+
+. Determine your GitLab host:
+** SaaS: `gitlab.com`
+** Self-hosted: Your GitLab instance hostname
+
+. Ensure your cluster can reach the GitLab instance and the GitLab instance can send webhooks to your cluster.
+
+=== Create Project Access Token
+
+. Navigate to your GitLab project.
+
+. Go to **Settings > Access Tokens**.
+
+. Create a new token with:
+** **Role:** Maintainer
+** **Scopes:** `api`, `read_repository`, `write_repository`
+
+. Copy and save the token securely -- it will only be shown once.
+
+=== Verify
+
+✓ GitLab instance hostname noted +
+✓ GitLab group name noted +
+✓ Project Access Token created and saved +
+✓ Token has Maintainer role with required scopes +
+
+== Exercise 4: Set up Quay registry integration
+
+In this exercise, you will prepare a Quay registry organization and create an OAuth token for {TSFShortName} integration.
+
+=== Create Quay organization
+
+. Go to link:https://quay.io[Quay.io^] and sign in (or access your self-hosted Quay instance).
+
+. Create a new organization or identify an existing organization.
++
+For example: `techcorp-images`
+
+. Note the organization name.
+
+=== Generate OAuth access token
+
+. In Quay, navigate to **Account Settings** (your user icon > Account Settings).
+
+. Click **Applications** in the left sidebar.
+
+. Click **Create New Application**.
+
+. Enter an application name (e.g., `tsf-integration`) and click **Create Application**.
+
+. Click on the application name, then click **Generate Token**.
+
+. Select **all permission scopes** and click **Generate Access Token**.
+
+. Copy and save the token securely.
+
+=== Note Quay URL
+
+For Quay.io:
+----
+https://quay.io
+----
+
+For self-hosted Quay, use your Quay instance URL.
+
+=== Verify
+
+✓ Quay organization created +
+✓ OAuth token generated with full permissions +
+✓ Organization name and token saved securely +
+✓ Quay URL noted +
+
+== Exercise 5: Create the environment configuration file
+
+In this exercise, you will create the `tsf.env` file that contains all credentials and endpoints needed by the installer.
+
+=== Install Podman locally
+
+If you haven't already, install Podman on your local workstation.
+
+For RHEL/Fedora:
+[source,bash]
+----
+sudo dnf install podman
+----
+
+For macOS:
+[source,bash]
+----
+brew install podman
+----
+
+Verify installation:
+[source,bash]
+----
+podman --version
+----
+
+[WARNING]
+====
+Docker is not supported. You must use Podman for this installation.
+====
+
+=== Create tsf.env for GitHub
+
+If you are using GitHub, create a file named `tsf.env` with the following content:
+
+[source,bash]
+----
+GITHUB__ORG=<your_github_organization>
+OCP__API_ENDPOINT=<your_cluster_api_url>
+OCP__USERNAME=<your_cluster_admin_username>
+OCP__PASSWORD=<your_cluster_admin_password>
+QUAY__API_TOKEN=<your_quay_oauth_token>
+QUAY__ORG=<your_quay_organization>
+QUAY__URL=<your_quay_url>
+----
+
+Replace the placeholders with your actual values.
+
+=== Create tsf.env for GitLab
+
+If you are using GitLab, create a file named `tsf.env` with the following content:
+
+[source,bash]
+----
+GITLAB__HOST=gitlab.com
+GITLAB__GROUP=<your_gitlab_group>
+GITLAB__TOKEN=glpat-xxxx
+OCP__API_ENDPOINT=<your_cluster_api_url>
+OCP__USERNAME=<your_cluster_admin_username>
+OCP__PASSWORD=<your_cluster_admin_password>
+QUAY__API_TOKEN=<your_quay_oauth_token>
+QUAY__ORG=<your_quay_organization>
+QUAY__URL=<your_quay_url>
+----
+
+Replace the placeholders with your actual values.
+
+=== Example tsf.env (GitHub)
+
+Here's an example for TechCorp using GitHub:
+
+[source,bash]
+----
+GITHUB__ORG=techcorp-industries
+OCP__API_ENDPOINT=https://api.cluster-abc123.ocpv00.rhdp.net:6443
+OCP__USERNAME=kubeadmin
+OCP__PASSWORD=S3cur3P@ssw0rd
+QUAY__API_TOKEN=abcd1234efgh5678ijkl9012mnop3456
+QUAY__ORG=techcorp-images
+QUAY__URL=https://quay.io
+----
+
+=== Secure the file
+
+[IMPORTANT]
+====
+The `tsf.env` file contains sensitive credentials. Protect this file:
+
+[source,bash]
+----
+chmod 600 tsf.env
+----
+
+Do not commit this file to version control.
+====
+
+=== Verify
+
+✓ Podman installed on local workstation +
+✓ `tsf.env` file created with all required variables +
+✓ File permissions set to 600 +
+✓ All placeholders replaced with actual values +
+
+== Learning outcomes
+
+Let's verify what you've accomplished in this appendix:
+
+* ✓ You verified your {OCPName} cluster meets the requirements ({OCPVersion}+, 3+ nodes, cluster-admin)
+* ✓ You created or identified a GitHub organization OR configured GitLab access
+* ✓ You created a Quay organization and generated an OAuth token
+* ✓ You installed Podman on your local workstation
+* ✓ You created the `tsf.env` configuration file with all required credentials
+
+== Summary
+
+In this appendix, you prepared everything needed for {TSFShortName} installation:
+
+* Verified cluster prerequisites and connectivity
+* Configured GitHub or GitLab integration for source control
+* Set up Quay registry with organization and access token
+* Created the environment configuration file with all credentials
+
+You are now ready to install {TSFShortName} (or to continue if your environment is already deployed).
+
+[IMPORTANT]
+====
+Keep your `tsf.env` file secure and accessible -- you will need it in xref:appendix/b-installing.adoc[Appendix B] to run the installer.
+====
+
+Continue with xref:appendix/b-installing.adoc[Appendix B: Installing {TSFShortName}], then xref:appendix/c-verifying.adoc[Appendix C: Verifying and accessing], before xref:04-module-02-getting-started.adoc[Module 2: Getting started with Konflux].
+
+Click *Next* to continue to xref:appendix/b-installing.adoc[Appendix B: Installing {TSFShortName}].

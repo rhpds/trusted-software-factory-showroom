@@ -6,9 +6,7 @@ Welcome to the {TSFName} ({TSFShortName}) workshop!
 
 In this workshop, you will learn how to deploy and use {TSFName}, a secure software supply chain solution for {OCPName}. By the end of this workshop, you will be able to:
 
-* Prepare your {OCPName} cluster for {TSFShortName} installation
-* Install and configure {TSFShortName} with GitHub or GitLab integration
-* Verify your deployment and access the Konflux UI
+* Access the Konflux UI
 * Build, sign, and verify your first container image with SLSA Level 3 provenance
 * Understand how {TSFShortName} integrates {RHTASName} for cryptographic signing
 * Generate and analyze Software Bills of Materials (SBOM) with {RHTPAName}
@@ -18,9 +16,9 @@ In this workshop, you will learn how to deploy and use {TSFName}, a secure softw
 This workshop is designed for platform engineers, DevSecOps practitioners, and developers who want to implement secure software supply chain practices on {OCPName}. You should have:
 
 * Basic knowledge of {OCPName} and Kubernetes concepts
-* Familiarity with CI/CD pipelines (Tekton/Jenkins)
+* Familiarity with CI/CD pipelines (Tekton)
 * Understanding of container images and registries
-* Experience with Git workflows
+* Experience with GitHub/GitLab workflows
 
 == What is {TSFName}?
 
@@ -38,8 +36,8 @@ Before starting this workshop, you should have access to:
 
 * {OCPName} cluster running version {OCPVersion} or later (3+ nodes, not SNO)
 * Cluster-admin privileges
-* Quay registry account (quay.io or self-hosted)
-* GitHub organization OR GitLab instance
+* The self-hosted Quay instance running on the cluster
+* The self-hosted GitLab instance running on the cluster
 * Local workstation with:
 ** {OCPCli} CLI installed
 ** Podman installed (Docker not supported)
@@ -48,9 +46,6 @@ Before starting this workshop, you should have access to:
 
 This workshop uses a dedicated {OCPName} cluster where you will:
 
-. Prepare the cluster and configure integrations
-. Install {TSFShortName} using the installer container
-. Verify the deployment across multiple namespaces
 . Build and release your first secure application
 
 Access your cluster console at: {openshift_console_url}

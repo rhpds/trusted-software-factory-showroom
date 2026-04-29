@@ -6,18 +6,16 @@ Congratulations on completing the {TSFName} workshop!
 
 In this workshop, you successfully:
 
-✓ **Prepared** your {OCPName} cluster with required accounts and credentials +
-✓ **Installed** {TSFShortName} using the containerized installer +
-✓ **Configured** integrations with GitHub/GitLab and Quay registry +
-✓ **Verified** deployment of all eight core components +
-✓ **Created** your first application in Konflux +
-✓ **Triggered** a secure build pipeline with automatic signing +
-✓ **Validated** cryptographic signatures and SLSA Level 3 provenance +
-✓ **Analyzed** Software Bills of Materials and vulnerability reports +
+✓ **Validated** cluster prerequisites and cluster-admin access for working with {TSFShortName} +
+✓ **Set up** your workstation (Podman, `tsf.env`, installer shell) and **authenticated** with `{OCPCli}` from the container +
+✓ **Created** an application in Konflux and **onboarded** a component from Git +
+✓ **Configured** release settings and **merged** the onboarding change to run the pipeline +
+✓ **Verified** signed images with cosign and **reviewed** SLSA Level 3 provenance +
+✓ **Explored** SBOMs and vulnerability findings in {RHTPAName} and **inspected** the release record +
 
 == What you've built
 
-TechCorp Industries (and you!) now have a complete secure software supply chain on {OCPName}:
+In the labs you worked inside a pre-configured {TSFShortName} environment on {OCPName}. The stack below summarizes the major layers—organized around the TechCorp Industries scenario—to show how the pieces relate:
 
 Infrastructure layer::
 * Cert-Manager for TLS certificates
@@ -89,175 +87,21 @@ This enables proactive security management and rapid response to new vulnerabili
 
 == Common troubleshooting scenarios
 
-=== Issue: Quay token error during deployment
-
-**Problem:** The `tsf deploy` command fails with "token field not found in secret"
-
-**Root cause:** Expired, invalid, or incorrectly saved Quay OAuth token
-
-**Solution:**
-
-. Regenerate the Quay OAuth token in Quay UI
-. Remove the secret:
-+
-[source,role="execute"]
-----
-oc delete secret tsf-quay-integration -n tsf
-----
-
-. Re-run Quay integration:
-+
-[source,role="execute"]
-----
-tsf integration quay \
-  --organization="$QUAY__ORG" \
-  --token="$QUAY__API_TOKEN" \
-  --url="$QUAY__URL"
-----
-
-. Restart deployment:
-+
-[source,role="execute"]
-----
-tsf deploy
-----
-
-=== Issue: Cert-Manager subscription conflict
-
-**Problem:** Deployment fails due to subscription conflict for Cert-Manager operator
-
-**Root cause:** Red Hat Cert-Manager Operator already installed on cluster
-
-**Solution:**
-
-Edit the `tsf-config` ConfigMap and change Cert-Manager's `manageSubscription` from `true` to `false`:
-
-[source,role="execute"]
-----
-oc edit configmap tsf-config -n tsf
-----
-
-Find the Cert-Manager component section and modify:
-[source,yaml]
-----
-cert-manager:
-  enabled: true
-  manageSubscription: false  # Change this from true to false
-----
-
-Save and restart deployment.
-
-=== Issue: RHTPA UI URL inaccessible
-
-**Problem:** URL displays "server%s(<nil>)" or returns an error
-
-**Root cause:** RHTPA service or PostgreSQL dependency failed to start
-
-**Diagnostic commands:**
-
-. Check RHTPA operator status:
-+
-[source,role="execute"]
-----
-oc get pods -n tsf-tpa
-----
-
-. Check PostgreSQL:
-+
-[source,role="execute"]
-----
-oc get pods -n tsf-tpa | grep postgres
-----
-
-. Review operator logs:
-+
-[source,role="execute"]
-----
-oc logs -n tsf-tpa deployment/rhtpa-operator
-----
-
-. Locate correct URL:
-+
-[source,role="execute"]
-----
-oc get routes -n tsf-tpa
-----
-
-=== Issue: Deployment appears to hang
-
-**Problem:** Deploy command runs indefinitely without output
-
-**Root cause:** Extended processing time for Helm chart deployment and container image pulls
-
-**Resolution:**
-
-This is normal behavior. Monitor progress separately:
-
-[source,role="execute"]
-----
-watch oc get pods -A
-----
-
-Typical completion time is approximately 15 minutes. Large images (Keycloak, RHTPA) take time to pull.
-
-=== Issue: Browser fails during GitHub integration
-
-**Problem:** Command logs error about missing "xdg-open" executable
-
-**Root cause:** Installer container lacks graphical browser capability
-
-**Solution:**
-
-Manually copy the `localhost:8228` URL from the terminal output and open it in your web browser. The port is already exposed by the `podman run -p 8228:8228` command.
-
-=== Issue: Pipeline fails with "cannot push to Quay"
-
-**Problem:** Build pipeline succeeds but push to Quay fails
-
-**Root cause:** Quay organization doesn't exist or token lacks permissions
-
-**Solution:**
-
-. Verify the organization exists in Quay
-. Verify the OAuth token has write permissions
-. Check the Quay integration secret:
-+
-[source,role="execute"]
-----
-oc get secret tsf-quay-integration -n tsf -o yaml
-----
-
-. If needed, recreate the integration:
-+
-[source,role="execute"]
-----
-oc delete secret tsf-quay-integration -n tsf
-tsf integration quay \
-  --organization="$QUAY__ORG" \
-  --token="$QUAY__API_TOKEN" \
-  --url="$QUAY__URL"
-----
-
-=== Issue: Component not triggering builds
-
-**Problem:** Merged PR but pipeline never runs
-
-**Root cause:** Webhook not configured or not reaching cluster
-
-**Solution:**
-
-. Check webhook configuration in GitHub/GitLab
-. Verify cluster is publicly accessible
-. Check Tekton EventListener:
-+
-[source,role="execute"]
-----
-oc get eventlistener -A
-----
-
-. Check recent webhook deliveries in GitHub/GitLab settings
+All known issues and workarounds—installer and `tsf deploy`, Konflux pipelines, Quay, and webhooks—are documented in xref:appendix/d-troubleshooting.adoc[Appendix D: Troubleshooting].
 
 == Next steps
+
+=== Deploy {TSFName} on a cluster
+
+If you need to install {TSFShortName} yourself on {OCPName}, follow the workshop appendices in order:
+
+* xref:appendix/a-preparing.adoc[Appendix A: Preparing to install] -- cluster checks, integrations (GitHub or GitLab, Quay), and `tsf.env`
+* xref:appendix/b-installing.adoc[Appendix B: Installing {TSFShortName}] -- installer container, `tsf` CLI, integrations, Helm deploy
+* xref:appendix/c-verifying.adoc[Appendix C: Verifying and accessing] -- validate namespaces, operators, routes, Konflux UI, and deployed components
+
+If anything fails during install, integration, or later Konflux onboarding, see xref:appendix/d-troubleshooting.adoc[Appendix D: Troubleshooting].
+
+Then return to xref:04-module-02-getting-started.adoc[Module 2: Getting started with Konflux] if you want to redo the onboarding flow on your own deployment, using your own repository (or a fork of https://github.com/konflux-ci/sample-component-golang).
 
 === Expand your secure supply chain
 

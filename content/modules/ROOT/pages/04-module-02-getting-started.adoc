@@ -1,4 +1,4 @@
-= Module 4: Getting started with Konflux
+= Module 2: Getting started with Konflux
 
 == Learning objectives
 
@@ -14,7 +14,7 @@ By the end of this module, you will be able to:
 
 == Introduction
 
-Now that {TSFShortName} is deployed and verified, you're ready to build your first secure application. In this module, you will use the Konflux UI to create an application, onboard a component from GitHub, and trigger a complete build-sign-release workflow.
+In this module, you will use the Konflux UI to create an application, onboard a component from GitLab, and trigger a complete build-sign-release workflow.
 
 This is where TechCorp's platform engineering work pays off -- developers can now build secure, signed container images automatically!
 
@@ -72,13 +72,7 @@ In this exercise, you will onboard your first component by connecting a Git repo
 
 === Prepare the sample repository
 
-For this workshop, you will use the Konflux sample component repository.
-
-. Fork the sample repository to your GitHub organization:
-+
-link:https://github.com/konflux-ci/sample-component-golang[https://github.com/konflux-ci/sample-component-golang^]
-+
-Or use the repository directly (read-only).
+For this workshop, you will use the Konflux sample component repository available in the tsf group of the local GitLab repository.
 
 === Add component in Konflux
 
@@ -87,13 +81,9 @@ Or use the repository directly (read-only).
 . Enter your Git repository URL:
 +
 ----
-https://github.com/<your-org>/sample-component-golang
+https://<gitlab_fqdn>/<your-org>/sample-component-golang
 ----
 +
-Or use the sample directly:
-+
-----
-https://github.com/konflux-ci/sample-component-golang
 ----
 
 . Select the branch to build (default: `main`).
@@ -104,6 +94,8 @@ https://github.com/konflux-ci/sample-component-golang
 ** **Pipeline template** to use
 
 . Click **Create component**.
+
+The webhook is created and configured in the GitLab repository.
 
 === Understand what happens
 
@@ -119,13 +111,13 @@ When you create a component, Konflux automatically:
 *Do not merge the pull request yet!* You need to configure release settings first.
 ====
 
-=== View the pull request
+=== View the merge request
 
-. Go to your GitHub repository (if you forked it).
+. Go to your GitLab repository.
 
-. Click **Pull requests**.
+. Click **Merge requests**.
 
-. You should see a pull request from Konflux adding `.tekton/` directory:
+. You should see a merge request from Konflux adding `.tekton/` directory:
 +
 ----
 Title: Add Konflux pipeline definitions
@@ -137,13 +129,13 @@ Files changed: .tekton/pull-request.yaml, .tekton/push.yaml
 === Verify
 
 ✓ Component created in Konflux +
-✓ Pull request sent to GitHub repository +
+✓ Merge request sent to GitLab repository +
 ✓ `.tekton/` directory added with pipeline definitions +
 ✓ Pipeline files visible in PR +
 
 [TIP]
 ====
-The `.tekton/` directory contains Tekton PipelineRun definitions that are triggered by GitHub/GitLab webhooks. These pipelines build, test, and sign your container images automatically.
+The `.tekton/` directory contains Tekton PipelineRun definitions that are triggered by the GitLab webhook. These pipelines build, test, and sign your container images automatically.
 ====
 
 == Exercise 3: Configure release settings
@@ -159,33 +151,29 @@ Release configuration requires cluster-admin access. This step simulates what a 
 
 For this workshop, we'll use a simplified approach. In a production environment, you would create ReleasePlan and ReleaseStrategy custom resources.
 
-. Create a basic release plan (run this from your {OCPCli} terminal):
+. Download the script from the `konflux-cli` namespace:
 +
 [source,role="execute"]
 ----
-cat <<EOF | oc apply -f -
-apiVersion: appstudio.redhat.com/v1alpha1
-kind: ReleasePlan
-metadata:
-  name: my-first-app-plan
-  namespace: default
-spec:
-  application: my-first-app
-  target: default
-EOF
+oc get configmap setup-release -n konflux-cli \
+  -o jsonpath='{.data.setup-release\.sh}' > setup-release.sh
+chmod +x setup-release.sh
 ----
 
-. Verify the release plan was created:
+. Run the script for your application (replace placeholders):
 +
 [source,role="execute"]
 ----
-oc get releaseplan my-first-app-plan -n default
+./setup-release.sh -a <application_name> -t <tenant-namespace> -m <managed-namespace>
 ----
+
+Use `./setup-release.sh -h` for all options. This creates the release plan, release policy, and release pipeline resources expected for your Konflux version.
 
 === Verify
 
-✓ ReleasePlan created for your application +
-✓ Release configuration complete +
+✓ `setup-release.sh` downloaded and executable +
+✓ Script ran without errors for your application and namespaces +
+✓ ReleasePlan Custom Resources created +
 
 [TIP]
 ====
@@ -198,13 +186,11 @@ In this exercise, you will trigger your first secure build by merging the Konflu
 
 === Merge the pull request
 
-. Go back to your GitHub repository.
+. Go back to your Git repository.
 
-. Open the Konflux pull request.
+. Open the Konflux onboarding pull request.
 
-. Click **Merge pull request**.
-
-. Click **Confirm merge**.
+. Merge the pull request.
 
 === Watch the pipeline run
 
@@ -266,17 +252,19 @@ In this exercise, you will verify that your container image was signed with {RHT
 +
 [source,role="execute"]
 ----
-cosign tree quay.io/<your-org>/<component-name>:<tag>
+cosign tree <image-reference>
 ----
++
+Replace `<image-reference>` with your image (for example `quay.io/<org>/<repo>@sha256:...`).
 +
 Expected output:
 +
 ----
-📦 quay.io/your-org/sample-component-golang:abc123
+📦 quay.io/your-org/sample-component-golang@sha256:...
 ├── 💾 attestations
-│   └── <sha256 digest>
+│   └── ...
 └── 🔐 signatures
-    └── <sha256 digest>
+    └── ...
 ----
 
 . View the signature details:
@@ -407,12 +395,13 @@ Let's verify what you've accomplished in this module:
 
 * ✓ You created an application in Konflux
 * ✓ You onboarded a component from a Git repository
+* ✓ You configured release resources with `setup-release.sh`
 * ✓ You merged Konflux's pull request to enable pipelines
-* ✓ You triggered an automated build pipeline
+* ✓ You completed build, integration, and release flows in the UI
 * ✓ You verified the signed container image with cosign
 * ✓ You viewed SLSA Level 3 provenance
 * ✓ You analyzed the SBOM and vulnerability scan in RHTPA
-* ✓ You viewed the automated release
+* ✓ You confirmed the release record
 
 == Summary
 
@@ -436,4 +425,4 @@ Now that you've completed the workshop, consider:
 * **Configuring multi-environment releases** -- Set up dev, staging, and prod targets
 * **Automating deployments** -- Integrate with ArgoCD or OpenShift GitOps
 
-Click *Next* for the workshop conclusion and troubleshooting guide.
+Click *Next* for the workshop conclusion. For help with issues, see xref:appendix/d-troubleshooting.adoc[Appendix D: Troubleshooting].

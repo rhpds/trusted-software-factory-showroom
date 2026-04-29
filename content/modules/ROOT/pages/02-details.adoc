@@ -2,7 +2,7 @@
 
 == Module timing
 
-This workshop consists of four hands-on modules:
+This workshop consists of two hands-on modules:
 
 [cols="1,2,1",options="header"]
 |===
@@ -10,55 +10,18 @@ This workshop consists of four hands-on modules:
 
 |Module 1
 |Preparing to install
-|20 minutes
+|10 minutes
 
 |Module 2
-|Installing {TSFShortName}
-|40 minutes
-
-|Module 3
-|Verifying and accessing
-|20 minutes
-
-|Module 4
 |Getting started with Konflux
 |30 minutes
 
 |*Total*
 |*Complete workshop*
-|*2 hours*
+|*40 minutes*
 |===
 
 == Technical requirements
-
-=== Cluster requirements
-
-To deploy {TSFShortName}, you need:
-
-* **{OCPName} cluster:** Version {OCPVersion} or later
-* **Cluster topology:** Standard 3-node or larger deployment (Single Node OpenShift not supported)
-* **Cluster state:** Fresh cluster without existing production workloads
-* **Access level:** Cluster-admin privileges required
-* **Network connectivity:** Bidirectional access to external services (GitHub/GitLab, Quay)
-
-=== External service accounts
-
-You will need accounts and credentials for:
-
-GitHub (recommended)::
-* GitHub organization (github.com)
-* Ability to create GitHub Apps in the organization
-* Network connectivity for webhook delivery to cluster
-
-GitLab (alternative)::
-* GitLab instance (SaaS or self-hosted)
-* Project Access Token with `api`, `read_repository`, `write_repository` scopes
-* Maintainer role on the project
-
-Quay registry::
-* Quay account (quay.io or self-hosted Quay instance)
-* Organization created in Quay
-* OAuth access token with full permission scopes
 
 === Local workstation tools
 
@@ -77,67 +40,14 @@ For this workshop, you have access to:
 
 * **{OCPName} cluster:** {OCPVersion}
 * **Console URL:** {openshift_console_url}
+* **Kubernetes API (for `{OCPCli}` login):** {openshift_api_url}
 * **Cluster-admin access:** Full administrative privileges
-* **Internet connectivity:** Access to GitHub, Quay, and other external services
-
-=== Components deployed
-
-During this workshop, you will deploy these components:
-
-Cert-Manager Operator::
-Certificate lifecycle management for TLS certificates
-
-Red Hat Keycloak::
-Identity and access management with SSO
-
-Konflux Operator::
-Custom Resource Definitions for build pipelines
-
-Konflux UI::
-Web interface for managing applications and builds
-
-OpenShift Pipelines::
-Tekton-based CI/CD pipelines
-
-{RHTASName}::
-Artifact signing with Fulcio, Rekor, and TUF
-
-{RHTPAName}::
-SBOM generation and vulnerability analysis
-
-Quay integration::
-Container registry credentials management
-
-=== Namespaces created
-
-The installation creates these namespaces:
-
-* `tsf` -- Core {TSFShortName} configuration
-* `cert-manager-operator` -- Certificate management
-* `rhbk-operator` -- Keycloak operator
-* `rhtpa-operator` -- Trusted Profile Analyzer operator
-* `konflux-ui` -- Web interface
-* `openshift-storage` -- Storage components
-* Additional namespaces for Konflux components
-
-== Important notes
-
-[WARNING]
-====
-The {TSFShortName} installer is designed for initial deployment only. It does not support upgrades or updates. This is a day-zero activity.
-====
-
-[IMPORTANT]
-====
-Ensure your cluster has sufficient resources and is not running production workloads before beginning the installation.
-====
-
-[TIP]
-====
-Have your GitHub/GitLab and Quay credentials ready before starting Module 2 to streamline the installation process.
-====
+* A self-hosted GitLab service
+* A self-hosted Quay service
 
 == Support and documentation
+
+Links to the featured products used in this demo:
 
 * **{TSFShortName} documentation:** link:https://redhat-appstudio.github.io/tsf-cli/tsf/index.html[Official TSF docs^]
 * **Konflux documentation:** link:https://konflux-ci.dev/docs/[Konflux project docs^]
@@ -146,8 +56,8 @@ Have your GitHub/GitLab and Quay credentials ready before starting Module 2 to s
 
 == Workshop authors
 
-This workshop was created by the Red Hat App Studio team.
+This workshop was created by the Red Hat Advanced Developer Suite team.
 
 == Ready to start?
 
-Click *Next* to begin Module 1 and start preparing your cluster for {TSFShortName} installation.
+Click *Next* to begin Module 1.
