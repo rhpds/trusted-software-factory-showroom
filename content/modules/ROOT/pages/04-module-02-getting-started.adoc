@@ -155,7 +155,8 @@ For this workshop, we'll use a simplified approach. In a production environment,
 +
 [source,role="execute"]
 ----
-oc get configmap setup-release -n konflux-cli \
+oc get configmap setup-release \
+  -n konflux-cli \
   -o jsonpath='{.data.setup-release\.sh}' > setup-release.sh
 chmod +x setup-release.sh
 ----
@@ -248,11 +249,22 @@ In this exercise, you will verify that your container image was signed with {RHT
 
 === View signature with cosign
 
-. From your terminal, verify the image signature using cosign:
+. From your terminal, download cosign from the cluster:
 +
 [source,role="execute"]
 ----
-cosign tree <image-reference>
+tas_host=$(oc get route -A -l "app.kubernetes.io/part-of=trusted-artifact-signer,app.kubernetes.io/component=client-server" -o jsonpath='{.items[0].spec.host}')
+curl -sSLo cosign.gz https://${tas_host}/clients/linux/cosign-${ARCH}.gz
+gunzip cosign.gz
+chmod +x cosign
+----
++
+
+. Verify the image signature using cosign:
++
+[source,role="execute"]
+----
+./cosign tree <image-reference>
 ----
 +
 Replace `<image-reference>` with your image (for example `quay.io/<org>/<repo>@sha256:...`).
