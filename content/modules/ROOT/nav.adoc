@@ -5,7 +5,7 @@
 * xref:02-details.adoc[Workshop Details]
 
 .Hands-on Modules
-* xref:03-module-01-preparing.adoc[Module 1: Preparing to Install]
+* xref:03-module-01-preparing.adoc[Module 1: Preparing your environment for the lab]
 * xref:04-module-02-getting-started.adoc[Module 2: Getting Started with Konflux]
 
 .Appendix
