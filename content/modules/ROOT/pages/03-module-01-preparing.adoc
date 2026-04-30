@@ -1,4 +1,4 @@
-= Module 1: Preparing to install
+= Module 1: Preparing your environment for the lab
 
 == Learning objectives
 

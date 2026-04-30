@@ -36,14 +36,16 @@ By completing this workshop, you will be able to:
 
 This workshop is organized into the following modules:
 
-Module 1: Preparing to install::
+Module 1: Preparing your environment for the lab::
 Validate cluster prerequisites, install Podman, create an initial `tsf.env` with API credentials, run the installer container, and confirm `oc` access from inside it.
 
 Module 2: Getting started with Konflux::
 Create your first application, onboard a component from Git, trigger a secure build pipeline, and verify the signed artifacts with SLSA provenance.
 
+Optional modules to learn how to deploy TSF from scratch:
+
 Appendix A: Preparing to install::
-Same preparation exercises as Module 1, for readers who follow the appendix sequence only.
+Similar preparation exercises as Module 1, for readers who follow the appendix sequence only.
 
 Appendix B: Installing {TSFShortName}::
 Run the {TSFShortName} installer container, configure integrations with GitHub and Quay, and deploy all components using Helm charts.

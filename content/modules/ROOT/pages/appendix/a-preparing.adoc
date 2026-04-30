@@ -14,11 +14,6 @@ By the end of this appendix, you will be able to:
 
 Before installing {TSFShortName}, you need to prepare your {OCPName} cluster and configure integrations with external services. This appendix walks you through validating cluster prerequisites, setting up accounts, and creating the configuration file that the installer will use.
 
-[NOTE]
-====
-These exercises duplicate xref:03-module-01-preparing.adoc[Module 1: Preparing to install]; use whichever path fits your agenda. If you already completed Module 1 in the workshop, you can xref:appendix/b-installing.adoc[Appendix B: Installing {TSFShortName}] when your `tsf.env` is ready.
-====
-
 Think of this as *TechCorp's platform engineering team* gathering all the credentials and access needed before deploying the secure software supply chain.
 
 == Exercise 1: Verify cluster prerequisites
@@ -53,7 +48,7 @@ Server Version: 4.20.x
 
 === Verify cluster topology
 
-. Check the number of nodes in your cluster.
+. Check that you have at least 3 nodes with the master role in your cluster.
 +
 [source,role="execute"]
 ----

@@ -9,7 +9,7 @@ This workshop consists of two hands-on modules:
 |Module |Topic |Duration
 
 |Module 1
-|Preparing to install
+|Preparing your environment for the lab
 |10 minutes
 
 |Module 2
