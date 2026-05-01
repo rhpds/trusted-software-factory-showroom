@@ -13,7 +13,7 @@ By the end of this appendix, you will be able to:
 
 == Introduction
 
-Now that your environment is prepared (xref:appendix/a-preparing.adoc[Appendix A] or xref:03-module-01-preparing.adoc[Module 1]), you're ready to install {TSFShortName}. The installation uses a containerized installer that includes the `{TSFCli}` CLI tool. This tool orchestrates the deployment of nine Helm charts that create all the components of the secure software supply chain.
+Now that your environment is prepared (xref:appendix/a-preparing.adoc[Appendix A]), you're ready to install {TSFShortName}. The installation uses a containerized installer that includes the `{TSFCli}` CLI tool. This tool orchestrates the deployment of nine Helm charts that create all the components of the secure software supply chain.
 
 In this appendix, you will run the installer, configure integrations, and deploy {TSFShortName} to your cluster.
 
@@ -34,7 +34,9 @@ podman run -it --rm --env-file tsf.env \
   {TSFInstallerImage} --login
 ----
 +
+
 This command:
+
 * Pulls the latest installer image
 * Loads environment variables from `tsf.env`
 * Exposes port 8228 for GitHub App workflows
@@ -83,7 +85,7 @@ The environment variables from `tsf.env` are automatically available.
 +
 [source,role="execute"]
 ----
-oc auth can-i '*' '*'
+oc auth can-i '*' '*' --all-namespaces
 ----
 +
 Expected output:
@@ -327,6 +329,7 @@ In this exercise, you will deploy all {TSFShortName} components using Helm chart
 tsf deploy
 ----
 +
+
 This command deploys nine Helm charts sequentially:
 +
 . Cert-Manager
@@ -380,7 +383,7 @@ All components deployed successfully!
 
 === Verify
 
-✓ All nine Helm charts deployed successfully +
+✓ All Helm charts deployed successfully +
 ✓ No errors in deployment output +
 ✓ Konflux UI URL displayed +
 ✓ RHTPA UI URL displayed +

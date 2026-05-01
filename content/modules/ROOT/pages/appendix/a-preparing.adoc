@@ -68,12 +68,7 @@ master-2.cluster-abc123.ocpv00.rhdp.net     Ready    control-plane,master   5d  
 +
 [source,role="execute"]
 ----
-oc whoami
-----
-+
-[source,role="execute"]
-----
-oc auth can-i '*' '*'
+oc auth can-i '*' '*' --all-namespaces
 ----
 +
 Expected output:
@@ -95,12 +90,12 @@ If your cluster has existing production workloads, consider using a dedicated cl
 
 == Exercise 2: Set up GitHub integration
 
-In this exercise, you will prepare a GitHub organization for integration with {TSFShortName}.
-
 [NOTE]
 ====
-This workshop uses GitHub. If you prefer GitLab, skip to Exercise 3.
+This exercise uses GitHub. If you prefer GitLab, skip to Exercise 3.
 ====
+
+In this exercise, you will prepare a GitHub organization for integration with {TSFShortName}.
 
 === Create or identify GitHub organization
 
