@@ -30,13 +30,19 @@ oc get namespaces | grep -E '(tsf|konflux|cert-manager|rhbk|rhtpa|openshift-stor
 Expected output:
 +
 ----
-cert-manager-operator          Active   10m
-konflux-ui                     Active   8m
-openshift-storage              Active   12m
-rhbk-operator                  Active   11m
-rhtpa-operator                 Active   9m
-tsf                            Active   15m
-tsf-tpa                        Active   9m
+cert-manager                                       Active   25m
+cert-manager-operator                              Active   25m
+konflux-cli                                        Active   5m
+konflux-info                                       Active   5m
+konflux-operator                                   Active   5m
+konflux-ui                                         Active   5m
+openshift-storage                                  Active   15m
+rhbk-operator                                      Active   10m
+rhtpa-operator                                     Active   10m
+tsf                                                Active   10m
+tsf-keycloak                                       Active   10m
+tsf-tas                                            Active   10m
+tsf-tpa                                            Active   10m
 ----
 
 . Count the namespaces to ensure all were created.
@@ -45,6 +51,12 @@ tsf-tpa                        Active   9m
 ----
 oc get namespaces | grep -E '(tsf|konflux|cert-manager|rhbk|rhtpa|openshift-storage)' | wc -l
 ----
++
+Expected output:
++
+----
+13
+---
 
 === Verify
 
@@ -93,7 +105,7 @@ rhbk-operator-xxxxx-xxxxx          1/1     Running   0          11m
 +
 [source,role="execute"]
 ----
-oc get pods -n rhtpa-operator
+oc get pods -n tsf-tpa
 ----
 +
 Expected output:
@@ -116,7 +128,8 @@ Expected output:
 +
 ----
 NAME                           READY   STATUS    RESTARTS   AGE
-konflux-ui-xxxxx-xxxxx         1/1     Running   0          8m
+dex-xxxxx-xxxxx                1/1     Running   0          8m
+proxy-xxxxx-xxxxx              2/2     Running   0          8m
 ----
 
 === Verify
@@ -131,50 +144,22 @@ In this exercise, you will identify the URLs for accessing {TSFShortName} compon
 
 === Get Konflux UI route
 
-. Find the Konflux UI route.
+. Get and save the Konflux UI URL:
 +
-[source,role="execute"]
+[source,bash,role="execute"]
 ----
-oc get routes -n konflux-ui
-----
-+
-Expected output:
-+
-----
-NAME         HOST/PORT
-konflux-ui   konflux-ui-konflux-ui.apps.cluster-abc123.ocpv00.rhdp.net
-----
-
-. Save the URL for later use:
-+
-[source,bash]
-----
-KONFLUX_URL=$(oc get route konflux-ui -n konflux-ui -o jsonpath='{.spec.host}')
-echo "Konflux UI: https://$KONFLUX_URL"
+KONFLUX_URL="https://$(oc get route -n konflux-ui -l konflux.konflux-ci.dev/component=ui,konflux.konflux-ci.dev/owner=konflux-ui -o jsonpath='{.items[0].spec.host}')"
+echo "Konflux UI: $KONFLUX_URL"
 ----
 
 === Get RHTPA UI route
 
-. Find the {RHTPAName} UI route.
+. Get and save the {RHTPAName} UI URL.
 +
-[source,role="execute"]
+[source,bash,role="execute"]
 ----
-oc get routes -n tsf-tpa
-----
-+
-Expected output:
-+
-----
-NAME       HOST/PORT
-rhtpa-ui   rhtpa-ui-tsf-tpa.apps.cluster-abc123.ocpv00.rhdp.net
-----
-
-. Save the URL for later use:
-+
-[source,bash]
-----
-RHTPA_URL=$(oc get route rhtpa-ui -n tsf-tpa -o jsonpath='{.spec.host}')
-echo "RHTPA UI: https://$RHTPA_URL"
+RHTPA_URL="https://$(oc get route -n tsf-tpa -l app.kubernetes.io/component=server,app.kubernetes.io/instance=trustedprofileanalyzer -o jsonpath='{.items[0].spec.host}')"
+echo "RHTPA UI: $RHTPA_URL"
 ----
 
 === Verify
@@ -196,11 +181,11 @@ In this exercise, you will access the Konflux UI for the first time and authenti
 https://<your-konflux-ui-route>
 ----
 +
-Or use the URL saved earlier:
+You can use the URL saved earlier:
 +
 [source,bash]
 ----
-echo "https://$KONFLUX_URL"
+echo "$KONFLUX_URL"
 ----
 
 . You will be redirected to the {OCPName} login page.
@@ -233,8 +218,8 @@ Create a new application or view your namespaces
 ----
 
 . The UI should display:
-** "Create an application" button
-** Navigation menu with Applications, Releases, etc.
+** The "Get started with Konflux" page
+** Navigation menu with Namespaces, Applications, Releases, etc.
 ** Your username in the top right corner
 
 === Verify
@@ -270,7 +255,7 @@ You should see Tekton controllers, webhooks, and triggers running.
 +
 [source,role="execute"]
 ----
-oc get pods -n tsf | grep -E '(fulcio|rekor|tuf)'
+oc get pods -n tsf-tas | grep -E '(fulcio|rekor|tuf)'
 ----
 +
 You should see:

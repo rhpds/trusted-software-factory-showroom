@@ -12,7 +12,7 @@ asciidoc:
     TSFName: Trusted Software Factory
     TSFShortName: TSF
     TSFCli: tsf
-    TSFInstallerImage: quay.io/redhat-ads/tsf-cli:unstable
+    TSFInstallerImage: quay.io/redhat-ads/tsf-cli:latest
     # OpenShift
     OCPName: OpenShift Container Platform
     OCPShortName: OCP
