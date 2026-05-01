@@ -326,7 +326,8 @@ In this exercise, you will view the Software Bill of Materials and vulnerability
 +
 [source,bash]
 ----
-echo "https://$RHTPA_URL"
+RHTPA_URL="https://$(oc get route -n tsf-tpa -l app.kubernetes.io/component=server,app.kubernetes.io/instance=trustedprofileanalyzer -o jsonpath='{.items[0].spec.host}')"
+echo "RHTPA UI: $RHTPA_URL"
 ----
 
 . Authenticate with your {OCPName} credentials (same as Konflux).
