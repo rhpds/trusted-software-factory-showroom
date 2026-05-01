@@ -22,7 +22,7 @@ In this exercise, you will verify that your {OCPName} cluster meets the requirem
 
 === Verify cluster version
 
-. Login to your {OCPName} cluster using the {OCPCli} CLI.
+. Login to your {OCPName} cluster with an admin user using the {OCPCli} CLI.
 +
 Use your cluster Kubernetes API endpoint (typically `https://api.<cluster>:6443`; it matches `{openshift_api_url}` in this workshop and aligns with `OCP__API_ENDPOINT` in `tsf.env`).
 +
@@ -151,10 +151,9 @@ This exercise is an alternative to Exercise 2. Complete this only if you are usi
 
 . Navigate to your GitLab project.
 
-. Go to **Settings > Access Tokens**.
+. Go to **User Icon > Preferences > Access > Personal Access Token**.
 
 . Create a new token with:
-** **Role:** Maintainer
 ** **Scopes:** `api`, `read_repository`, `write_repository`
 
 . Copy and save the token securely -- it will only be shown once.
@@ -174,6 +173,8 @@ In this exercise, you will prepare a Quay registry organization and create an OA
 
 . Go to link:https://quay.io[Quay.io^] and sign in (or access your self-hosted Quay instance).
 
+. If you are using quay.io, toggle the **New UI** slider at the top of the page.
+
 . Create a new organization or identify an existing organization.
 +
 For example: `techcorp-images`
@@ -182,7 +183,7 @@ For example: `techcorp-images`
 
 === Generate OAuth access token
 
-. In Quay, navigate to **Account Settings** (your user icon > Account Settings).
+. In Quay, navigate to **Account Settings** (your user icon > Account Settings > Settings).
 
 . Click **Applications** in the left sidebar.
 

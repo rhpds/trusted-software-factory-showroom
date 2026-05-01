@@ -79,17 +79,17 @@ oc login "$OCP__API_ENDPOINT" \
 +
 The environment variables from `tsf.env` are automatically available.
 
-. Verify you are logged in.
+. Verify you are logged in as an admin user.
 +
 [source,role="execute"]
 ----
-oc whoami
+oc auth can-i '*' '*'
 ----
 +
 Expected output:
 +
 ----
-kubeadmin
+yes
 ----
 
 === Verify cluster connection
@@ -131,6 +131,11 @@ Creating namespace tsf...
 Creating ConfigMap tsf-config...
 Configuration created successfully.
 ----
+
+[NOTE]
+====
+If the configuration already exists, you can use the `--force` flag to overwrite it.
+====
 
 . Verify the configuration was created.
 +
@@ -369,12 +374,9 @@ watch oc get pods -A
 +
 ----
 All components deployed successfully!
-
-Konflux UI: https://konflux-ui-konflux-ui.apps.cluster-abc123.ocpv00.rhdp.net
-RHTPA UI: https://rhtpa-ui-tsf-tpa.apps.cluster-abc123.ocpv00.rhdp.net
 ----
 
-. Note the URLs -- you will need them in xref:appendix/c-verifying.adoc[Appendix C].
+. Note the various URLs that appeared during the deployment -- you will need them in xref:appendix/c-verifying.adoc[Appendix C].
 
 === Verify
 
