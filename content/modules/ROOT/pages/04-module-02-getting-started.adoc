@@ -28,7 +28,8 @@ In this exercise, you will create your first application in Konflux.
 +
 [source,bash]
 ----
-echo "https://$KONFLUX_URL"
+KONFLUX_URL="https://$(oc get route -n konflux-ui -l konflux.konflux-ci.dev/component=ui,konflux.konflux-ci.dev/owner=konflux-ui -o jsonpath='{.items[0].spec.host}')"
+echo "Konflux UI: $KONFLUX_URL"
 ----
 
 . Ensure you are logged in and see the landing page.
@@ -44,7 +45,7 @@ echo "https://$KONFLUX_URL"
 . Enter an application name:
 +
 ----
-my-first-app
+sample-application
 ----
 +
 [TIP]
@@ -88,7 +89,6 @@ For this workshop, you will use the Konflux sample component repository availabl
 {gitlab_url}/tsf/sample-component-golang.git
 ----
 +
-----
 
 . Select the branch to build (default: `main`).
 
@@ -384,7 +384,7 @@ In this exercise, you will view the automated release created after your build s
 . Navigate to **Releases** in the left menu.
 
 . You should see a release for your application:
-** **Application:** my-first-app
+** **Application:** sample-application
 ** **Component:** sample-component-golang
 ** **Status:** Succeeded
 ** **Target:** Quay

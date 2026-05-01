@@ -47,7 +47,7 @@ Server Version: 4.20.x
 
 === Verify cluster topology
 
-. Check the number of nodes in your cluster.
+. Check that you have at least 3 nodes with the **master** roles in your cluster.
 +
 [source,role="execute"]
 ----
@@ -63,29 +63,10 @@ master-1.cluster-abc123.ocpv00.rhdp.net     Ready    control-plane,master   5d  
 master-2.cluster-abc123.ocpv00.rhdp.net     Ready    control-plane,master   5d    v1.33.4
 ----
 
-. Verify you have cluster-admin privileges.
-+
-[source,role="execute"]
-----
-oc whoami
-----
-+
-[source,role="execute"]
-----
-oc auth can-i '*' '*'
-----
-+
-Expected output:
-+
-----
-yes
-----
-
 === Verify
 
 ✓ Cluster is running {OCPName} {OCPVersion} or later +
 ✓ Cluster has 3 or more nodes (not Single Node OpenShift) +
-✓ You have cluster-admin access +
 
 == Exercise 2: Create the environment configuration file
 
@@ -224,17 +205,17 @@ oc login "$OCP__API_ENDPOINT" \
 +
 The environment variables from `tsf.env` are automatically available.
 
-. Verify you are logged in.
+. Verify if your current user has administrator (cluster-admin) permissions across the cluster.
 +
 [source,role="execute"]
 ----
-oc whoami
+oc auth can-i '*' '*' --all-namespaces
 ----
 +
 Expected output:
 +
 ----
-kubeadmin
+yes
 ----
 
 === Verify
@@ -246,7 +227,7 @@ kubeadmin
 
 Let's verify what you've accomplished in this module:
 
-* ✓ You verified your {OCPName} cluster meets the requirements ({OCPVersion}+, 3+ nodes, cluster-admin)
+* ✓ You verified your {OCPName} cluster meets the requirements ({OCPVersion}+, 3+ nodes)
 * ✓ You installed Podman locally and created an initial `tsf.env` with OCP credential variables populated
 * ✓ You pulled and ran the installer container so your environment loads in the interactive shell
 * ✓ You logged in with {OCPCli} from inside the container and confirmed your cluster-admin identity
