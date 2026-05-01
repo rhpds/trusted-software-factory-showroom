@@ -35,6 +35,10 @@ echo "https://$KONFLUX_URL"
 
 === Create application
 
+. In the left menu, click on ** Namespaces **.
+
+. Select **default-tenant**.
+
 . Click **Create an application**.
 
 . Enter an application name:
@@ -76,12 +80,12 @@ For this workshop, you will use the Konflux sample component repository availabl
 
 === Add component in Konflux
 
-. From your application page, click **Add component**.
+. From your application page, click **Actions > Add component**.
 
 . Enter your Git repository URL:
 +
 ----
-https://<gitlab_fqdn>/<your-org>/sample-component-golang
+{gitlab_url}/tsf/sample-component-golang.git
 ----
 +
 ----
@@ -93,7 +97,7 @@ https://<gitlab_fqdn>/<your-org>/sample-component-golang
 ** **Build strategy** (Dockerfile, Buildpacks, etc.)
 ** **Pipeline template** to use
 
-. Click **Create component**.
+. Click **Add component**.
 
 The webhook is created and configured in the GitLab repository.
 
@@ -124,7 +128,11 @@ Title: Add Konflux pipeline definitions
 Files changed: .tekton/pull-request.yaml, .tekton/push.yaml
 ----
 
-. Review the files but *do not merge yet*.
+. *Do not merge the PR until Exercise 4*'
+
+. Review the files.
+
+. After a few seconds, the CI will trigger the Konflux pipelines. You can monitor their progress, which should take about 10m on the first run.
 
 === Verify
 
