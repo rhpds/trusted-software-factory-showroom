@@ -262,7 +262,8 @@ In this exercise, you will verify that your container image was signed with {RHT
 [source,role="execute"]
 ----
 tas_host=$(oc get route -A -l "app.kubernetes.io/part-of=trusted-artifact-signer,app.kubernetes.io/component=client-server" -o jsonpath='{.items[0].spec.host}')
-curl -sSLo cosign.gz https://${tas_host}/clients/linux/cosign-${ARCH}.gz
+ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+curl --fail --location --output cosign.gz --show-error --silent https://${tas_host}/clients/linux/cosign-${ARCH}.gz
 gunzip cosign.gz
 chmod +x cosign
 ----
