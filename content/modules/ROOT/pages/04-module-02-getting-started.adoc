@@ -441,6 +441,16 @@ In this exercise, you will view the automated release created after your build s
 ** Integration tests passed
 ** Image was pushed to Quay
 
+=== View policy validation information
+
+. From the application's **Releases** tab, click on the **Name** link
+
+. Select the **Pipeline runs** tab
+
+. Click on the name of the pipeline run to access details of the pipeline
+
+. Select the **Security** tab to browse the results of the validation against the Conforma policy
+
 === Verify
 
 ✓ Release created automatically after build +
