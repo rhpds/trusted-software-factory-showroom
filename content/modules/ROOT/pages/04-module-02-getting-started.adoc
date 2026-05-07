@@ -90,6 +90,8 @@ For this workshop, you will use the Konflux sample component repository availabl
 ----
 +
 
+. Toggle **Should the image produced be private** to the **off** position.
+
 . Select the branch to build (default: `main`).
 
 . Konflux automatically detects:
@@ -276,12 +278,12 @@ chmod +x cosign
 ./cosign tree <image-reference>
 ----
 +
-Replace `<image-reference>` with your image (for example `quay.io/<org>/<repo>@sha256:...`).
+Replace `<image-reference>` with your image (for example `<quay-url>/<org>/<repo>@sha256:...`).
 +
 Expected output:
 +
 ----
-📦 quay.io/your-org/sample-component-golang@sha256:...
+📦 <quay-url>/<org>/sample-component-golang@sha256:...
 ├── 💾 attestations
 │   └── ...
 └── 🔐 signatures
@@ -292,7 +294,7 @@ Expected output:
 +
 [source,role="execute"]
 ----
-cosign verify quay.io/<your-org>/<component-name>:<tag> \
+cosign verify <quay-url>/<your-org>/<component-name>:<tag> \
   --certificate-identity-regexp '.*' \
   --certificate-oidc-issuer-regexp '.*'
 ----
