@@ -27,7 +27,7 @@ In this exercise, you will pull and run the {TSFShortName} installer container.
 
 . Run the installer container with Podman.
 +
-[source,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 podman run -it --rm --env-file tsf.env \
   --entrypoint bash -p 8228:8228 --pull always \
