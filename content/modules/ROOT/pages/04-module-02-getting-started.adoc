@@ -191,9 +191,9 @@ Use `./setup-release.sh -h` for all options. This creates the release plan, rele
 In production, release plans can target different environments (dev, staging, prod) and include approval gates, policy checks, and deployment strategies.
 ====
 
-== Exercise 4: Trigger the build pipeline
+== Exercise 4: Trigger the release build pipeline
 
-In this exercise, you will trigger your first secure build by merging the Konflux pull request.
+In this exercise, you will trigger your first secure release build by merging the Konflux pull request.
 
 === Merge the pull request
 
@@ -271,11 +271,12 @@ chmod +x cosign
 ----
 +
 
-. Verify the image signature using cosign:
+. Verify the metadata attached to the image using cosign:
 +
 [source,role="execute"]
 ----
-./cosign tree <image-reference>
+IMAGE="<image-reference>"
+./cosign tree $IMAGE
 ----
 +
 Replace `<image-reference>` with your image (for example `<quay-url>/<org>/<repo>@sha256:...`).
@@ -290,13 +291,47 @@ Expected output:
     └── ...
 ----
 
+. Configure cosign to use the TUF server deployed on the cluster:
++
+[source,bash,role="execute"]
+----
+TUF_HOST=$(oc get route -A -l "app.kubernetes.io/part-of=trusted-artifact-signer,app.kubernetes.io/component=tuf" -o jsonpath='{.items[0].spec.host}')
+curl -sSfL -o /tmp/root.json https://$TUF_HOST/root.json
+./cosign initialize \
+  --mirror=https://$TUF_HOST \
+  --root=/tmp/root.json
+----
+
 . View the signature details:
 +
 [source,role="execute"]
 ----
-cosign verify <quay-url>/<your-org>/<component-name>:<tag> \
+cosign verify $IMAGE \
   --certificate-identity-regexp '.*' \
   --certificate-oidc-issuer-regexp '.*'
+----
+
+. View the attestation details:
++
+[source,role="execute"]
+----
+REKOR_HOST=$(oc get route -A -l "app.kubernetes.io/part-of=trusted-artifact-signer,app.kubernetes.io/component=rekor-server" -o jsonpath='{.items[0].spec.host}')
+cosign verify-attestation $IMAGE \
+  --certificate-identity-regexp '.*' \
+  --certificate-oidc-issuer-regexp '.*' \
+  --rekor-url="https://$REKOR_HOST" \
+  --type=slsaprovenance
+----
+
+. View the SBOM details:
++
+[source,role="execute"]
+----
+REKOR_HOST=$(oc get route -A -l "app.kubernetes.io/part-of=trusted-artifact-signer,app.kubernetes.io/component=rekor-server" -o jsonpath='{.items[0].spec.host}')
+cosign verify-attestation $IMAGE \
+  --certificate-identity-regexp '.*' \
+  --certificate-oidc-issuer-regexp '.*' \
+  --type=spdxjson
 ----
 
 === Understand SLSA provenance
@@ -317,7 +352,7 @@ This provenance is signed and attached to the image, providing an immutable audi
 ✓ Image visible in Quay registry +
 ✓ Image has cryptographic signature +
 ✓ Signature verified with cosign +
-✓ SLSA provenance attached to image +
+✓ SLSA provenance and SBOM attached to image +
 
 == Exercise 6: Analyze the SBOM
 
@@ -385,13 +420,12 @@ In this exercise, you will view the automated release created after your build s
 
 . Return to the Konflux UI.
 
-. Navigate to **Releases** in the left menu.
+. Navigate to **Applications**-**Your_application** and select the **Releases** tab on the top menu.
 
 . You should see a release for your application:
-** **Application:** sample-application
-** **Component:** sample-component-golang
+** **Name:** Click on this link for information about the release
 ** **Status:** Succeeded
-** **Target:** Quay
+** **Release Snapshot:** Click on this for information about the event that triggered the release and the revision of the code that was used to build it.
 
 === View release details
 
