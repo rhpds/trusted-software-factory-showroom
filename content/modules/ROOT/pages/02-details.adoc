@@ -1,26 +1,5 @@
 = Workshop details
 
-== Module timing
-
-This workshop consists of two hands-on modules:
-
-[cols="1,2,1",options="header"]
-|===
-|Module |Topic |Duration
-
-|Module 1
-|Preparing your environment for the lab
-|10 minutes
-
-|Module 2
-|Getting started with Konflux
-|30 minutes
-
-|*Total*
-|*Complete workshop*
-|*40 minutes*
-|===
-
 == Technical requirements
 
 === Local workstation tools

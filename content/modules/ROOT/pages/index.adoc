@@ -44,9 +44,7 @@ Before starting this workshop, you should have access to:
 
 == Workshop environment
 
-This workshop uses a dedicated {OCPName} cluster where you will:
-
-. Build and release your first secure application
+This workshop uses a dedicated {OCPName} cluster. Use this cluster to build and release your first secure application
 
 Access your cluster console at: {openshift_console_url}
 

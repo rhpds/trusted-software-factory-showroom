@@ -47,7 +47,7 @@ Server Version: 4.20.x
 
 === Verify cluster topology
 
-. Check that you have at least 3 nodes with the **master** roles in your cluster.
+. Check that you have at least 3 nodes with the **master** role in your cluster.
 +
 [source,role="execute"]
 ----
@@ -74,7 +74,7 @@ In this exercise, you will create the `tsf.env` file that holds the {OCPName} va
 
 === Install Podman locally
 
-If you haven't already, install Podman on your local workstation.
+If you haven't already done so, install Podman on your local workstation.
 
 For RHEL/Fedora:
 [source,bash]
@@ -162,9 +162,14 @@ podman run -it --rm --env-file tsf.env \
 ----
 +
 This command:
-* Pulls the latest installer image
-* Loads environment variables from `tsf.env`
-* Starts an interactive bash shell inside the container
++
+--
+** Pulls the latest installer image
+
+** Loads environment variables from `tsf.env`
+
+** Starts an interactive bash shell inside the container
+--
 
 === Verify container is running
 
