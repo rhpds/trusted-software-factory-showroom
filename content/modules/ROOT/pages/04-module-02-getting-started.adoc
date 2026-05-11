@@ -85,6 +85,7 @@ For this workshop, you will use the Konflux sample component repository availabl
 
 . Enter your Git repository URL:
 +
+[source,subs="attributes+"]
 ----
 {gitlab_url}/tsf/sample-component-golang.git
 ----
