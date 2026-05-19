@@ -3,11 +3,11 @@
 == Proposed Timing
 
 * *Total demo duration:* ~50 minutes
-* Module 1 — Secure Software Factory Tour: 10 min
-* Module 2 — Build, Sign, and Ship with Konflux: 25 min
+* Module 1 -- Secure Software Factory Tour: 10 min
+* Module 2 -- Build, Sign, and Ship with Konflux: 25 min
 * Conclusion and Q&A: 10 min
 
-Adjust as needed for your audience. Module 2 is the core demo — prioritize it if time is short.
+Adjust as needed for your audience. Module 2 is the core demo -- prioritize it if time is short.
 
 == Demo Environment
 
