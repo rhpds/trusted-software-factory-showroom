@@ -29,6 +29,7 @@ The problem it solves is real: software supply chain attacks have grown dramatic
 
 . Open a browser and navigate to the {OCPName} console:
 +
+[source,subs="attributes+"]
 ----
 {openshift_console_url}
 ----
