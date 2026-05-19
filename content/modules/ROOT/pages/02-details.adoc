@@ -78,8 +78,10 @@ This demo uses a pre-provisioned {OCPName} cluster with {TSFShortName} already d
 === Bastion SSH
 
 * *Host:* {bastion_public_hostname}
+* *Port:* {bastion_ssh_port}
 * *User:* {bastion_ssh_user_name}
 * *Password:* {bastion_ssh_password}
+* *Full command:* {bastion_ssh_command}
 
 === GitLab
 
