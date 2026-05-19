@@ -87,7 +87,10 @@ KONFLUX_URL="https://$(oc get route -n konflux-ui -l konflux.konflux-ci.dev/comp
 echo "Konflux UI: $KONFLUX_URL"
 ----
 
-. Open `$KONFLUX_URL` in a browser. Log in with your {OCPName} credentials.
+. Open `$KONFLUX_URL` in a browser. Log in with your {OCPName} credentials:
++
+* *Username:* {openshift_cluster_admin_username}
+* *Password:* {openshift_cluster_admin_password}
 
 . On the landing page, show the *Namespaces* view. Point to the `default-tenant` namespace -- this is where customer applications live.
 
@@ -113,7 +116,7 @@ RHTPA_URL="https://$(oc get route -n tsf-tpa -l app.kubernetes.io/component=serv
 echo "RHTPA UI: $RHTPA_URL"
 ----
 +
-Open `$RHTPA_URL`. Log in and show the SBOM browser or vulnerability summary if a component has already been built.
+Open `$RHTPA_URL`. Log in with your {OCPName} credentials ({openshift_cluster_admin_username} / {openshift_cluster_admin_password}) and show the SBOM browser or vulnerability summary if a component has already been built.
 
 . Wrap up with the architecture summary:
 +
