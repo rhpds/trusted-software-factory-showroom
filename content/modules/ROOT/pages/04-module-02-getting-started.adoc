@@ -1,12 +1,12 @@
 = Module 2: Build, Sign, and Ship with Konflux
 
-This module demonstrates the full secure pipeline — from onboarding a component to verifying a cryptographically signed image with SLSA Level 3 provenance.
+This module demonstrates the full secure pipeline -- from onboarding a component to verifying a cryptographically signed image with SLSA Level 3 provenance.
 
-== Part 1 — Creating an Application in Konflux
+== Part 1: Creating an Application in Konflux
 
 === Know
 
-Konflux models software as *applications* containing one or more *components*. An application is a logical grouping — for example, a microservices system with a frontend, backend, and database service would be one application with three components.
+Konflux models software as *applications* containing one or more *components*. An application is a logical grouping -- for example, a microservices system with a frontend, backend, and database service would be one application with three components.
 
 When a component is added, Konflux automatically:
 
@@ -20,7 +20,7 @@ The developer does not configure Tekton, Fulcio, Rekor, or Quay separately. They
 *Talking points:*
 
 * "From the developer's perspective, they click 'Add component' and paste a Git URL. Everything else is automated."
-* "TechCorp's security team mandated signed images. With {TSFShortName}, developers don't even know signing is happening — it's part of the pipeline."
+* "TechCorp's security team mandated signed images. With {TSFShortName}, developers don't even know signing is happening -- it's part of the pipeline."
 
 === Show
 
@@ -38,18 +38,18 @@ sample-application
 +
 [NOTE]
 ====
-*Presenter tip:* "An application in Konflux is not a running service — it is the grouping that Konflux uses to manage build, test, release, and signing policies. TechCorp might have one application per microservice."
+*Presenter tip:* "An application in Konflux is not a running service -- it is the grouping that Konflux uses to manage build, test, release, and signing policies. TechCorp might have one application per microservice."
 ====
 
-== Part 2 — Onboarding a Component from Git
+== Part 2: Onboarding a Component from Git
 
 === Know
 
 Adding a component is where the magic starts. Konflux inspects the repository, detects the build strategy (Dockerfile, Buildpacks, etc.), selects the appropriate pipeline template, and automatically submits a pull request with the `.tekton/` definitions.
 
-The pipeline definitions live in the developer's repository — version-controlled, auditable, and reviewable via standard code review processes. This is a key security property: pipeline definitions cannot be changed without going through the same review gate as application code.
+The pipeline definitions live in the developer's repository -- version-controlled, auditable, and reviewable via standard code review processes. This is a key security property: pipeline definitions cannot be changed without going through the same review gate as application code.
 
-*Why this matters for security:* if a pipeline definition could be changed outside version control, an attacker could silently modify the build steps — and the resulting image would still appear to come from the correct source. Storing `.tekton/` in the repo closes that gap.
+*Why this matters for security:* if a pipeline definition could be changed outside version control, an attacker could silently modify the build steps -- and the resulting image would still appear to come from the correct source. Storing `.tekton/` in the repo closes that gap.
 
 === Show
 
@@ -74,12 +74,12 @@ Konflux detects the Dockerfile and selects the appropriate pipeline.
 +
 [NOTE]
 ====
-*Presenter tip:* "See this pull request from Konflux? It added `.tekton/pull-request.yaml` and `.tekton/push.yaml` — the full pipeline definitions. These are now version-controlled in the application repository. Any change to the build process has to go through code review. That is part of how SLSA Level 3 provenance works — the build is hermetic and the pipeline definition is immutable for that build."
+*Presenter tip:* "See this pull request from Konflux? It added `.tekton/pull-request.yaml` and `.tekton/push.yaml` -- the full pipeline definitions. These are now version-controlled in the application repository. Any change to the build process has to go through code review. That is part of how SLSA Level 3 provenance works -- the build is hermetic and the pipeline definition is immutable for that build."
 
-*Do not merge the PR yet* — you need to configure release first.
+*Do not merge the PR yet* -- you need to configure release first.
 ====
 
-== Part 3 — Configuring Release Settings
+== Part 3: Configuring Release Settings
 
 === Know
 
@@ -91,13 +91,13 @@ Release plans define:
 * What policy checks must pass (signature verification, vulnerability thresholds, SLSA level)
 * Where the image goes (Quay repository, environment namespace)
 
-This separation means security policies are enforced at release time — not left to individual pipeline authors to remember.
+This separation means security policies are enforced at release time -- not left to individual pipeline authors to remember.
 
 === Show
 
 . Download and run the release setup script:
 +
-[source,role="execute"]
+[source,bash,role="execute"]
 ----
 oc get configmap setup-release \
   -n konflux-cli \
@@ -107,17 +107,17 @@ chmod +x setup-release.sh
 
 . Run for your application:
 +
-[source,role="execute"]
+[source,bash,role="execute"]
 ----
 ./setup-release.sh -a sample-application -t default-tenant -m default-tenant
 ----
 +
 [NOTE]
 ====
-*Presenter tip:* "In production, release plans target specific environments — dev, staging, prod — and include approval gates, policy checks, and deployment strategies. For TechCorp, the security team controls the release policy. Developers cannot bypass it."
+*Presenter tip:* "In production, release plans target specific environments -- dev, staging, prod -- and include approval gates, policy checks, and deployment strategies. For TechCorp, the security team controls the release policy. Developers cannot bypass it."
 ====
 
-== Part 4 — Triggering the Secure Pipeline
+== Part 4: Triggering the Secure Pipeline
 
 === Know
 
@@ -132,7 +132,7 @@ Merging the Konflux pull request starts the full secure pipeline. From this poin
 . Run integration tests
 . Trigger the release pipeline if all checks pass
 
-The entire process is recorded. Every step, every input, every output — all signed and stored in Rekor. This is the provenance record.
+The entire process is recorded. Every step, every input, every output -- all signed and stored in Rekor. This is the provenance record.
 
 *Talking points:*
 
@@ -155,16 +155,16 @@ The component shows *Build status: In Progress*.
 +
 [NOTE]
 ====
-*Presenter tip:* "While this runs, walk through the pipeline steps with the customer. Point to the `sign` step — that is Fulcio issuing a certificate and Rekor recording it. Point to `generate-sbom` — that is RHTPA cataloging every package. First run takes 5-10 minutes. In a customer environment with a warm image cache it is faster."
+*Presenter tip:* "While this runs, walk through the pipeline steps with the customer. Point to the `sign` step -- that is Fulcio issuing a certificate and Rekor recording it. Point to `generate-sbom` -- that is RHTPA cataloging every package. First run takes 5-10 minutes. In a customer environment with a warm image cache it is faster."
 ====
 
 . When complete, the component shows *Build status: Succeeded* with a link to the image in Quay.
 
-== Part 5 — Verifying the Signed Image
+== Part 5: Verifying the Signed Image
 
 === Know
 
-Signing without verification is theater. {TSFShortName} makes verification fast and unambiguous — any engineer can confirm that an image came from the secure pipeline, was not tampered with, and has the expected provenance.
+Signing without verification is theater. {TSFShortName} makes verification fast and unambiguous -- any engineer can confirm that an image came from the secure pipeline, was not tampered with, and has the expected provenance.
 
 The verification uses `cosign`, the open-source tool from the Sigstore project. Cosign checks:
 
@@ -177,7 +177,7 @@ If any of these checks fail, the image is not from a trusted build. Period.
 *Talking points:*
 
 * "This check can run in a deployment pipeline. If an image is not signed with the expected identity, the deployment is rejected automatically."
-* "No one at TechCorp — not even a cluster admin — can produce a passing cosign verify without going through the Konflux pipeline."
+* "No one at TechCorp -- not even a cluster admin -- can produce a passing cosign verify without going through the Konflux pipeline."
 
 === Show
 
@@ -195,7 +195,7 @@ gunzip cosign.gz && chmod +x cosign
 
 . Show what is attached to the image:
 +
-[source,role="execute"]
+[source,bash,role="execute"]
 ----
 IMAGE="<image-reference>"
 ./cosign tree $IMAGE
@@ -214,7 +214,7 @@ curl -sSfL -o /tmp/root.json https://$TUF_HOST/root.json
 
 . Verify the signature:
 +
-[source,role="execute"]
+[source,bash,role="execute"]
 ----
 ./cosign verify $IMAGE \
   --certificate-identity-regexp '.*' \
@@ -228,7 +228,7 @@ curl -sSfL -o /tmp/root.json https://$TUF_HOST/root.json
 
 . Verify the SLSA provenance attestation:
 +
-[source,role="execute"]
+[source,bash,role="execute"]
 ----
 REKOR_HOST=$(oc get route -A -l "app.kubernetes.io/part-of=trusted-artifact-signer,app.kubernetes.io/component=rekor-server" -o jsonpath='{.items[0].spec.host}')
 ./cosign verify-attestation $IMAGE \
@@ -238,7 +238,7 @@ REKOR_HOST=$(oc get route -A -l "app.kubernetes.io/part-of=trusted-artifact-sign
   --type=slsaprovenance
 ----
 
-== Part 6 — Viewing the Automated Release
+== Part 6: Viewing the Automated Release
 
 === Know
 
@@ -249,7 +249,7 @@ Once the build succeeds and all policy checks pass, Konflux automatically create
 * Integration test results
 * The SLSA attestation
 
-This gives TechCorp a single, auditable record for every production artifact — no manual release notes, no tracking spreadsheets.
+This gives TechCorp a single, auditable record for every production artifact -- no manual release notes, no tracking spreadsheets.
 
 === Show
 
@@ -261,21 +261,21 @@ This gives TechCorp a single, auditable record for every production artifact —
 +
 [NOTE]
 ====
-*Presenter tip:* "The Conforma policy engine checked this release against TechCorp's security policies before allowing it to proceed. If the image had failed a vulnerability threshold or the signature was missing, the release would have been blocked here — automatically, without human intervention."
+*Presenter tip:* "The Conforma policy engine checked this release against TechCorp's security policies before allowing it to proceed. If the image had failed a vulnerability threshold or the signature was missing, the release would have been blocked here -- automatically, without human intervention."
 ====
 
-== Part 7 — Software Bill of Materials and Vulnerability Analysis
+== Part 7: Software Bill of Materials and Vulnerability Analysis
 
 === Know
 
-An SBOM is a complete inventory of every software component in a container image — operating system packages, language runtimes, libraries, and their versions. {TSFShortName} generates SBOMs automatically for every build and stores them in RHTPA, which continuously cross-references them against vulnerability databases.
+An SBOM is a complete inventory of every software component in a container image -- operating system packages, language runtimes, libraries, and their versions. {TSFShortName} generates SBOMs automatically for every build and stores them in RHTPA, which continuously cross-references them against vulnerability databases.
 
-When a new CVE is published, RHTPA immediately identifies every image in the registry that contains the affected package — without re-scanning. This is the difference between reactive patching (rebuild everything, hope you find it) and proactive supply chain management (know exactly what is affected before the incident).
+When a new CVE is published, RHTPA immediately identifies every image in the registry that contains the affected package -- without re-scanning. This is the difference between reactive patching (rebuild everything, hope you find it) and proactive supply chain management (know exactly what is affected before the incident).
 
 *Talking points:*
 
 * "TechCorp's security team can search for any CVE and immediately see which applications are affected. That used to take days of manual analysis."
-* "RHTPA also tracks license information — useful for open-source compliance and legal review."
+* "RHTPA also tracks license information -- useful for open-source compliance and legal review."
 * "This is what executive orders and frameworks like NIST SSDF are asking for. {TSFShortName} generates it automatically."
 
 === Show
@@ -300,5 +300,5 @@ echo "$RHTPA_URL"
 +
 [NOTE]
 ====
-*Presenter closing for the demo:* "Every image that leaves this pipeline has this data automatically attached. TechCorp's security team has full visibility into what is in every container running in production — and when the next Log4Shell drops, they'll know within minutes which workloads are affected. That is what a secure software supply chain looks like in practice."
+*Presenter closing for the demo:* "Every image that leaves this pipeline has this data automatically attached. TechCorp's security team has full visibility into what is in every container running in production -- and when the next Log4Shell drops, they'll know within minutes which workloads are affected. That is what a secure software supply chain looks like in practice."
 ====
