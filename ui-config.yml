@@ -11,11 +11,15 @@ view_switcher:
   default_mode: split
 
 tabs:
-  # OCP Console
+  # OpenShift Console
   - name: OCP Console
     url: 'https://console-openshift-console.${DOMAIN}'
 
-  # Bastion terminal
+  # GitLab
+  - name: GitLab
+    url: 'https://gitlab-gitlab.${DOMAIN}'
+
+  # Local terminal (ttyd via nginx /terminal/ proxy)
   - name: Terminal
-    path: /wetty
+    path: /terminal/
     port: 443
