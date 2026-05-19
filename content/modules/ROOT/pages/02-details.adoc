@@ -13,16 +13,18 @@ Adjust as needed for your audience. Module 2 is the core demo -- prioritize it i
 
 This demo uses a pre-provisioned {OCPName} cluster with {TSFShortName} already deployed.
 
+=== Cluster Access
+
 [cols="1,2",options="header"]
 |===
 | Resource
 | Value
 
 | {OCPName} console
-| {openshift_console_url}
+| {openshift_cluster_console_url}
 
 | {OCPShortName} API
-| {openshift_api_url}
+| {openshift_api_server_url}
 
 | Cluster ingress domain
 | {openshift_cluster_ingress_domain}
@@ -30,6 +32,74 @@ This demo uses a pre-provisioned {OCPName} cluster with {TSFShortName} already d
 | Bastion host
 | {bastion_public_hostname}
 |===
+
+=== TSF Component URLs
+
+[cols="1,2",options="header"]
+|===
+| Component
+| URL
+
+| Konflux UI
+| {konflux_ui_url}
+
+| Quay Registry
+| {quay_console_url}
+
+| Keycloak SSO
+| {keycloak_url}
+
+| {RHTPAName} (RHTPA)
+| {tpa_url}
+
+| GitLab
+| {gitlab_url}
+
+| Argo CD (OpenShift GitOps)
+| {openshift_gitops_server}
+
+| Fulcio (RHTAS)
+| {tas_route_1_url}
+
+| Rekor (RHTAS)
+| {tas_route_3_url}
+
+| TUF (RHTAS)
+| {tas_route_4_url}
+|===
+
+== Credentials
+
+=== Cluster Admin (for demo)
+
+* *Username:* {openshift_cluster_admin_username}
+* *Password:* {openshift_cluster_admin_password}
+
+=== Bastion SSH
+
+* *Host:* {bastion_public_hostname}
+* *User:* {bastion_ssh_user_name}
+* *Password:* {bastion_ssh_password}
+
+=== GitLab
+
+* *URL:* {gitlab_url}
+* *Username:* {gitlab_username}
+* *Password:* {password}
+* *Root username:* {gitlab_root_username}
+* *Root password:* {gitlab_root_password}
+
+=== Quay Registry
+
+* *URL:* {quay_console_url}
+* *Admin username:* {quay_admin_username}
+* *Admin password:* {quay_admin_password}
+
+=== Keycloak SSO
+
+* *URL:* {keycloak_url}
+* *Admin username:* {keycloak_admin_username}
+* *Admin password:* {keycloak_admin_password}
 
 == Products and Versions
 
@@ -59,44 +129,6 @@ This demo uses a pre-provisioned {OCPName} cluster with {TSFShortName} already d
 | {TSFShortName} Installer image
 | {TSFInstallerImage}
 |===
-
-== Access and Credentials
-
-=== {OCPName} Cluster
-
-* *Console URL:* {openshift_console_url}
-* *Username:* {bastion_ssh_user_name}
-* *Password:* {bastion_ssh_password}
-
-=== Konflux UI
-
-Retrieve the URL during the demo:
-
-[source,bash,role="execute"]
-----
-KONFLUX_URL="https://$(oc get route -n konflux-ui -l konflux.konflux-ci.dev/component=ui,konflux.konflux-ci.dev/owner=konflux-ui -o jsonpath='{.items[0].spec.host}')"
-echo "Konflux UI: $KONFLUX_URL"
-----
-
-=== {RHTPAName} UI
-
-[source,bash,role="execute"]
-----
-RHTPA_URL="https://$(oc get route -n tsf-tpa -l app.kubernetes.io/component=server,app.kubernetes.io/instance=trustedprofileanalyzer -o jsonpath='{.items[0].spec.host}')"
-echo "RHTPA UI: $RHTPA_URL"
-----
-
-== Featured Products
-
-* {RHTASName} (RHTAS)
-* {RHTPAName} (RHTPA)
-* Red Hat Quay
-* Red Hat Build of Keycloak
-* Red Hat OpenShift GitOps
-* Red Hat OpenShift Pipelines
-* S4 S3-Compatible Object Storage
-* GitLab Community Edition
-* Konflux
 
 == Troubleshooting
 
