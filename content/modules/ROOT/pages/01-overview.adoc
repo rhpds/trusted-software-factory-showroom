@@ -2,24 +2,24 @@
 :toc:
 :toc-placement: preamble
 
-{TSFName} ({TSFShortName}) shows how Red Hat builds, signs, and ships software internally — and how your customers can adopt the same standards.
+{TSFName} ({TSFShortName}) shows how Red Hat builds, signs, and ships software internally -- and how your customers can adopt the same standards.
 
 toc::[]
 
 == Background
 
 Red Hat ships over 5,000 packages and hundreds of container images every year.
-To do this securely and at scale, Red Hat built Konflux — an end-to-end secure software supply chain platform.
+To do this securely and at scale, Red Hat built Konflux -- an end-to-end secure software supply chain platform.
 {TSFName} is that same platform made available for customers to deploy on their own {OCPName} cluster.
 
 This demo tells that story.
 You are not showing a prototype or a reference architecture.
-You are showing the actual system Red Hat uses to build software — running in the customer's hands.
+You are showing the actual system Red Hat uses to build software -- running in the customer's hands.
 
 == The Customer Problem
 
 Software supply chain attacks are the fastest-growing category of cyber threat.
-High-profile incidents like SolarWinds and Log4Shell showed that attackers no longer break in — they sneak in through dependencies and build pipelines.
+High-profile incidents like SolarWinds and Log4Shell showed that attackers no longer break in -- they sneak in through dependencies and build pipelines.
 
 Customers face three compounding pressures:
 
@@ -34,11 +34,11 @@ The result: teams either skip signing entirely, or spend months building custom 
 {TSFShortName} eliminates all three problems with a single integrated platform:
 
 * *Konflux* orchestrates every build, test, and release workflow
-* *{RHTASName} (RHTAS)* signs every artifact cryptographically with short-lived certificates — no long-lived keys to rotate or compromise
+* *{RHTASName} (RHTAS)* signs every artifact cryptographically with short-lived certificates -- no long-lived keys to rotate or compromise
 * *{RHTPAName} (RHTPA)* generates a full Software Bill of Materials (SBOM) and scans for vulnerabilities automatically
-* Every image gets SLSA (Supply-chain Levels for Software Artifacts) Level 3 provenance — an immutable, signed record of who built it, when, from what source, and using which pipeline
+* Every image gets SLSA (Supply-chain Levels for Software Artifacts) Level 3 provenance -- an immutable, signed record of who built it, when, from what source, and using which pipeline
 
-The presenter value proposition in one sentence: *"This is the same platform Red Hat uses to build {OCPName} — now you can use it too."*
+The presenter value proposition in one sentence: *"This is the same platform Red Hat uses to build {OCPName} -- now you can use it too."*
 
 == Business Value
 
@@ -54,13 +54,13 @@ The presenter value proposition in one sentence: *"This is the same platform Red
 | Full SBOM generated and searchable for every build
 
 | Provenance is a spreadsheet or a wiki page
-| SLSA Level 3 provenance attached to every image — cryptographically verified
+| SLSA Level 3 provenance attached to every image -- cryptographically verified
 
 | Compliance evidence is assembled by hand before each audit
 | Continuous, tamper-proof audit trail for every artifact
 
 | Custom signing tooling breaks with upstream changes
-| Fully managed — Fulcio, Rekor, TUF handled by {TSFShortName}
+| Fully managed -- Fulcio, Rekor, TUF handled by {TSFShortName}
 |===
 
 == Running Customer Scenario
@@ -83,10 +83,10 @@ As the presenter, you are *TechCorp's platform engineering lead* walking the cus
 | Demo Overview (this page)
 | 5 min
 
-| Module 1 — Secure Software Factory Tour
+| Module 1 -- Secure Software Factory Tour
 | 10 min
 
-| Module 2 — Build, Sign, and Ship with Konflux
+| Module 2 -- Build, Sign, and Ship with Konflux
 | 25 min
 
 | Conclusion and Q&A
@@ -99,16 +99,16 @@ As the presenter, you are *TechCorp's platform engineering lead* walking the cus
 == Common Customer Questions
 
 *"How is this different from just running Tekton pipelines?"*
-→ Tekton is the engine. {TSFShortName} adds the signing infrastructure (Fulcio/Rekor/TUF), SBOM generation, vulnerability scanning, release management, and a unified UI — all wired together out of the box.
+→ Tekton is the engine. {TSFShortName} adds the signing infrastructure (Fulcio/Rekor/TUF), SBOM generation, vulnerability scanning, release management, and a unified UI -- all wired together out of the box.
 
 *"Does Red Hat actually use this internally?"*
 → Yes. Konflux is the platform Red Hat uses to build {OCPName} and other Red Hat products. {TSFShortName} is that platform packaged for customer deployment.
 
 *"What is SLSA Level 3 and why does it matter?"*
-→ SLSA Level 3 is the highest provenance standard that can be achieved without hardware roots of trust. It proves the build ran in an isolated, ephemeral environment using a specific pipeline definition — making it impossible to forge without compromising the build system itself.
+→ SLSA Level 3 is the highest provenance standard that can be achieved without hardware roots of trust. It proves the build ran in an isolated, ephemeral environment using a specific pipeline definition -- making it impossible to forge without compromising the build system itself.
 
 *"We already have a signing process. Why replace it?"*
-→ Most existing signing processes use long-lived keys that must be rotated, stored securely, and audited. {TSFShortName} uses keyless signing via Sigstore — short-lived certificates tied to your OIDC identity. No keys to manage, no keys to compromise.
+→ Most existing signing processes use long-lived keys that must be rotated, stored securely, and audited. {TSFShortName} uses keyless signing via Sigstore -- short-lived certificates tied to your OIDC identity. No keys to manage, no keys to compromise.
 
 *"What happens when a new CVE drops?"*
-→ RHTPA continuously scans SBOMs against vulnerability databases. When a new CVE is published, you immediately see which images are affected — without re-scanning from scratch.
+→ RHTPA continuously scans SBOMs against vulnerability databases. When a new CVE is published, you immediately see which images are affected -- without re-scanning from scratch.
