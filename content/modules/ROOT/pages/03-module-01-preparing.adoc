@@ -34,7 +34,10 @@ The problem it solves is real: software supply chain attacks have grown dramatic
 {openshift_console_url}
 ----
 
-. Log in with your cluster admin credentials.
+. Log in with your cluster admin credentials:
++
+* *Username:* {openshift_cluster_admin_username}
+* *Password:* {openshift_cluster_admin_password}
 
 . In the left navigation, go to *Workloads → Pods* and switch namespace to `konflux-ui`.
 +
