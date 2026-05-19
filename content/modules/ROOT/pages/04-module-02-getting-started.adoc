@@ -24,7 +24,7 @@ The developer does not configure Tekton, Fulcio, Rekor, or Quay separately. They
 
 === Show
 
-. In the Konflux UI, navigate to *Namespaces → default-tenant*.
+. Click the *Konflux* tab and navigate to *Namespaces → default-tenant*.
 
 . Click *Create an application*.
 
@@ -145,7 +145,7 @@ The entire process is recorded. Every step, every input, every output -- all sig
 
 . Merge the merge request.
 
-. Return to the Konflux UI and navigate to your application → *Components*.
+. Click the *Konflux* tab and navigate to your application → *Components*.
 +
 The component shows *Build status: In Progress*.
 
