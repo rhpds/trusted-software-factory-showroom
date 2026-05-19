@@ -1,5 +1,16 @@
 = Appendix A: Preparing to install
 
+[IMPORTANT]
+====
+*Optional — Build Your Own Adventure*
+
+This appendix is for presenters who want to demonstrate a *live {TSFShortName} installation* on their own cluster.
+The standard demo uses a pre-provisioned RHDP environment where {TSFShortName} is already deployed.
+You do not need this appendix for the main demo flow.
+
+If you are doing a self-install, follow Appendices A → B → C in order, then return to the main demo modules.
+====
+
 == Learning objectives
 
 By the end of this appendix, you will be able to:
