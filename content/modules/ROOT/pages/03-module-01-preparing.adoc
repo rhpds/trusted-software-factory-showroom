@@ -74,15 +74,7 @@ The customer gets SLSA (Supply-chain Levels for Software Artifacts) Level 3 prov
 
 === Show
 
-. In the *Terminal* tab, get the Konflux UI URL:
-+
-[source,bash,role="execute"]
-----
-KONFLUX_URL="https://$(oc get route -n konflux-ui -l konflux.konflux-ci.dev/component=ui,konflux.konflux-ci.dev/owner=konflux-ui -o jsonpath='{.items[0].spec.host}')"
-echo "Konflux UI: $KONFLUX_URL"
-----
-+
-Open `$KONFLUX_URL` in a new browser tab. Log in with your {OCPName} credentials:
+. Click the *Konflux* tab to open the Konflux UI. Log in with your {OCPName} credentials:
 +
 * *Username:* {openshift_cluster_admin_username}
 * *Password:* {openshift_cluster_admin_password}
