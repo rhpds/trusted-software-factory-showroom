@@ -1,141 +1,72 @@
 = Conclusion
 
-== Workshop summary
+== What You Showed
 
-Congratulations on completing the {TSFName} workshop!
+In this demo, TechCorp Industries solved their secure software supply chain challenge using {TSFName} — the same platform Red Hat uses to build {OCPName}.
 
-In this workshop, you successfully:
+The customer saw:
 
-✓ **Validated** cluster prerequisites and cluster-admin access for working with {TSFShortName} +
-✓ **Set up** your workstation (Podman, `tsf.env`, installer shell) and **authenticated** with `{OCPCli}` from the container +
-✓ **Created** an application in Konflux and **onboarded** a component from Git +
-✓ **Configured** release settings and **merged** the onboarding change to run the pipeline +
-✓ **Verified** signed images with cosign and **reviewed** SLSA Level 3 provenance +
-✓ **Explored** SBOMs and vulnerability findings in {RHTPAName} and **inspected** the release record +
+* *A complete, production-grade secure software supply chain* running on their own {OCPName} cluster
+* *Automatic image signing* using {RHTASName} — no long-lived keys, no manual steps
+* *SLSA Level 3 provenance* attached to every image — cryptographically verified and stored in Rekor
+* *SBOM generation and vulnerability scanning* with {RHTPAName} — continuous, not just at build time
+* *A unified developer experience* — developers push code, the pipeline handles the rest
 
-== What you've built
+== Key Messages to Reinforce
 
-In the labs you worked inside a pre-configured {TSFShortName} environment on {OCPName}. The stack below summarizes the major layers—organized around the TechCorp Industries scenario—to show how the pieces relate:
+* "Red Hat builds {OCPName} with this. You can use the same system."
+* "Signing, provenance, and SBOMs are automatic — not optional extras."
+* "When the next supply chain attack hits, TechCorp will know immediately which images are affected."
 
-Infrastructure layer::
-* Cert-Manager for TLS certificates
-* Red Hat Build of Keycloak for authentication
-* Storage components for persistent data
-
-Build and CI/CD layer::
-* Konflux for application management
-* OpenShift Pipelines (Tekton) for automated builds
-* GitHub/GitLab integration for source control
-
-Security layer::
-* {RHTASName} for cryptographic signing with Fulcio and Rekor
-* SLSA Level 3 provenance for build attestation
-* {RHTPAName} for SBOM generation and vulnerability scanning
-
-Distribution layer::
-* Quay integration for signed image storage
-* Automated release pipelines
-
-This architecture ensures that every container image is:
-
-* Built from verified source code
-* Signed with cryptographic keys
-* Traceable with complete provenance
-* Scanned for vulnerabilities
-* Documented with full SBOM
-
-== Key concepts recap
+== Key Concepts Recap
 
 === Konflux
 
-Konflux is the orchestration layer that ties everything together. It provides:
+Konflux is the orchestration layer that ties the secure software supply chain together. It provides application and component management, pipeline definitions, release plans, and integration with source control and registries.
 
-* Application and component management
-* Pipeline definitions and triggers
-* Release plans and strategies
-* Integration with source control and registries
+=== SLSA Provenance
 
-=== SLSA provenance
+Supply-chain Levels for Software Artifacts (SLSA) Level 3 provenance:
 
-SLSA (Supply-chain Levels for Software Artifacts) Level 3 provenance provides:
-
-* **Non-falsifiable** -- Signed by build system, cannot be forged
-* **Complete** -- Records all inputs and build steps
-* **Isolated** -- Build runs in ephemeral environment
-
-This enables you to verify *exactly* how an image was built, from which source, by which pipeline.
+* *Non-falsifiable* -- signed by the build system, cannot be forged
+* *Complete* -- records all inputs and build steps
+* *Isolated* -- build runs in an ephemeral, hermetic environment
 
 === {RHTASName}
 
-Red Hat Trusted Artifact Signer (based on Sigstore) provides:
+Red Hat Trusted Artifact Signer (RHTAS), based on Sigstore, provides:
 
-* **Fulcio** -- Certificate authority that issues short-lived signing certificates
-* **Rekor** -- Transparency log that records all signatures
-* **TUF** -- Framework for secure distribution of trust roots
+* *Fulcio* -- certificate authority that issues short-lived signing certificates
+* *Rekor* -- transparency log that records every signature permanently
+* *TUF* -- trust root framework for secure distribution of signing metadata
 
-Signatures are tied to your identity (via OIDC), not long-lived keys that can be compromised.
+Signatures are tied to build identity via OIDC — no long-lived keys to manage or compromise.
 
 === {RHTPAName}
 
-Red Hat Trusted Profile Analyzer generates:
+Red Hat Trusted Profile Analyzer (RHTPA) generates:
 
-* **SBOMs** -- Complete inventory of all software components
-* **Vulnerability reports** -- Known CVEs affecting your images
-* **License information** -- Compliance and legal review data
+* *SBOMs* -- complete inventory of every software component
+* *Vulnerability reports* -- CVEs affecting packages in every image
+* *License information* -- for open-source compliance and legal review
 
-This enables proactive security management and rapid response to new vulnerabilities.
+== Next Steps
 
-== Common troubleshooting scenarios
+=== For the Customer
 
-All known issues and workarounds—installer and `tsf deploy`, Konflux pipelines, Quay, and webhooks—are documented in xref:appendix/d-troubleshooting.adoc[Appendix D: Troubleshooting].
+* Request a proof-of-concept deployment with {TSFShortName} on their own cluster
+* Explore appendices A–C (optional) for the full self-install path
+* Review the SLSA and NIST SSDF alignment documentation
 
-== Next steps
+=== Deploy {TSFName} Yourself
 
-=== Deploy {TSFName} on a cluster
+If you or the customer want to install {TSFShortName} on a clean cluster, follow the optional appendices:
 
-If you need to install {TSFShortName} yourself on {OCPName}, follow the workshop appendices in order:
+* xref:appendix/a-preparing.adoc[Appendix A: Preparing to install] -- cluster checks, GitHub/GitLab and Quay integration, `tsf.env`
+* xref:appendix/b-installing.adoc[Appendix B: Installing {TSFShortName}] -- installer container, `tsf` CLI, Helm deploy
+* xref:appendix/c-verifying.adoc[Appendix C: Verifying and accessing] -- validate deployment, access Konflux UI
 
-* xref:appendix/a-preparing.adoc[Appendix A: Preparing to install] -- cluster checks, integrations (GitHub or GitLab, Quay), and `tsf.env`
-* xref:appendix/b-installing.adoc[Appendix B: Installing {TSFShortName}] -- installer container, `tsf` CLI, integrations, Helm deploy
-* xref:appendix/c-verifying.adoc[Appendix C: Verifying and accessing] -- validate namespaces, operators, routes, Konflux UI, and deployed components
-
-If anything fails during install, integration, or later Konflux onboarding, see xref:appendix/d-troubleshooting.adoc[Appendix D: Troubleshooting].
-
-Then return to xref:04-module-02-getting-started.adoc[Module 2: Getting started with Konflux] if you want to redo the onboarding flow on your own deployment, using your own repository (or a fork of https://github.com/konflux-ci/sample-component-golang).
-
-=== Expand your secure supply chain
-
-* **Onboard more applications** -- Move your production workloads to {TSFShortName}
-* **Customize pipelines** -- Add custom build steps, tests, and validations
-* **Implement policy enforcement** -- Use Conforma to enforce security policies
-* **Configure multi-environment releases** -- Set up dev, staging, production pipelines
-
-=== Advanced topics
-
-* **Custom integration tests** -- Define application-specific validation
-* **Multi-component applications** -- Build microservices architectures
-* **Security policies** -- Enforce image signing, vulnerability thresholds, SBOM requirements
-* **Deployment automation** -- Integrate with ArgoCD or OpenShift GitOps
-
-=== Stay up to date
-
-* **{TSFShortName} documentation:** link:https://redhat-appstudio.github.io/tsf-cli/tsf/index.html[Official TSF docs^]
-* **Konflux project:** link:https://konflux-ci.dev/docs/[Konflux documentation^]
-* **Sigstore project:** link:https://www.sigstore.dev/[Sigstore community^]
-* **SLSA framework:** link:https://slsa.dev/[SLSA specification^]
-
-== Workshop feedback
-
-We hope this workshop helped you understand secure software supply chains and how to implement them on {OCPName} with {TSFShortName}.
-
-Your feedback helps us improve! Please share:
-
-* What worked well
-* What could be improved
-* Topics you'd like to see covered
-* Real-world use cases you're implementing
-
-== Resources and references
+== Resources and References
 
 === Documentation
 
@@ -143,23 +74,17 @@ Your feedback helps us improve! Please share:
 * link:https://konflux-ci.dev/docs/[Konflux Documentation^]
 * link:https://docs.redhat.com/en/documentation/red_hat_trusted_artifact_signer[{RHTASName} Documentation^]
 * link:https://docs.redhat.com/en/documentation/red_hat_trusted_profile_analyzer[{RHTPAName} Documentation^]
-* link:https://docs.openshift.com/pipelines/[OpenShift Pipelines Documentation^]
+* link:https://docs.openshift.com/pipelines/[{OCPName} Pipelines Documentation^]
 
-=== Community and standards
+=== Standards and Community
 
-* link:https://www.sigstore.dev/[Sigstore Project^] -- Open source signing and transparency
-* link:https://slsa.dev/[SLSA Framework^] -- Supply-chain security levels
+* link:https://slsa.dev/[SLSA Framework^] -- supply-chain security levels
+* link:https://www.sigstore.dev/[Sigstore Project^] -- open-source signing and transparency
 * link:https://cyclonedx.org/[CycloneDX^] -- SBOM standard
-* link:https://spdx.dev/[SPDX^] -- Software package data exchange
+* link:https://spdx.dev/[SPDX^] -- software package data exchange
 
-=== Source code
+=== Source Code
 
 * link:https://github.com/redhat-appstudio/tsf-cli[TSF CLI GitHub Repository^]
 * link:https://github.com/konflux-ci[Konflux GitHub Organization^]
 * link:https://github.com/sigstore[Sigstore GitHub Organization^]
-
-== Thank you!
-
-Thank you for completing the {TSFName} workshop. You now have the knowledge and hands-on experience to implement secure software supply chains on {OCPName}.
-
-Happy building -- securely! 🔒
