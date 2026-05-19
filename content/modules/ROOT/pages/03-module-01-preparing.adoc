@@ -1,16 +1,16 @@
 = Module 1: The Secure Software Factory Tour
 
-This module introduces {TSFName} ({TSFShortName}) and walks through the deployed environment — showing the customer what they would get and how the components work together.
+This module introduces {TSFName} ({TSFShortName}) and walks through the deployed environment -- showing the customer what they would get and how the components work together.
 
-== Part 1 — What is {TSFName}?
+== Part 1: What is {TSFName}?
 
 === Know
 
-Red Hat ships {OCPName}, RHEL, and hundreds of other products every year. To do this securely and at scale, Red Hat built Konflux — an internal secure software supply chain platform. *{TSFName} is that same platform, packaged for customer deployment.*
+Red Hat ships {OCPName}, RHEL, and hundreds of other products every year. To do this securely and at scale, Red Hat built Konflux -- an internal secure software supply chain platform. *{TSFName} is that same platform, packaged for customer deployment.*
 
 This is not a reference architecture or a prototype. This is production software Red Hat trusts to build its own products.
 
-The problem it solves is real: software supply chain attacks have grown dramatically. Attackers no longer break into production systems directly — they compromise the build pipeline, inject malicious code into dependencies, or tamper with artifacts in transit. Customers need to prove that every container image they ship:
+The problem it solves is real: software supply chain attacks have grown dramatically. Attackers no longer break into production systems directly -- they compromise the build pipeline, inject malicious code into dependencies, or tamper with artifacts in transit. Customers need to prove that every container image they ship:
 
 * Was built from verified source code
 * Was not tampered with after the build
@@ -21,7 +21,7 @@ The problem it solves is real: software supply chain attacks have grown dramatic
 
 *Talking points:*
 
-* "Red Hat uses this to build OpenShift — you can use the same system."
+* "Red Hat uses this to build OpenShift -- you can use the same system."
 * "Every image that leaves this pipeline is signed, scanned, and traceable."
 * "When a new CVE drops, you know within minutes which images are affected."
 
@@ -37,7 +37,7 @@ The problem it solves is real: software supply chain attacks have grown dramatic
 
 . In the left navigation, go to *Workloads → Pods* and switch namespace to `konflux-ui`.
 +
-Point out that Konflux is running as a set of native {OCPName} workloads — not a SaaS service, not a cloud dependency. It runs on the customer's own cluster.
+Point out that Konflux is running as a set of native {OCPName} workloads -- not a SaaS service, not a cloud dependency. It runs on the customer's own cluster.
 
 . Show the namespaces created by {TSFShortName}:
 +
@@ -48,10 +48,10 @@ oc get namespaces | grep -E '(tsf|konflux|cert-manager|rhbk|rhtpa|openshift-stor
 +
 [NOTE]
 ====
-*Presenter tip:* Count the namespaces out loud — there are 13. Each one is a production-grade component: Keycloak for identity, RHTAS for signing, RHTPA for vulnerability analysis, S4 for storage, Quay for the registry. All deployed and wired together by the `tsf deploy` command.
+*Presenter tip:* Count the namespaces out loud -- there are 13. Each one is a production-grade component: Keycloak for identity, RHTAS for signing, RHTPA for vulnerability analysis, S4 for storage, Quay for the registry. All deployed and wired together by the `tsf deploy` command.
 ====
 
-== Part 2 — The Architecture in Action
+== Part 2: The Architecture in Action
 
 === Know
 
@@ -64,7 +64,7 @@ oc get namespaces | grep -E '(tsf|konflux|cert-manager|rhbk|rhtpa|openshift-stor
 . *Quay* stores the signed image
 . *Release pipeline* promotes the image to the target environment
 
-The customer gets SLSA (Supply-chain Levels for Software Artifacts) Level 3 provenance automatically — the highest attainable level without hardware roots of trust. This proves:
+The customer gets SLSA (Supply-chain Levels for Software Artifacts) Level 3 provenance automatically -- the highest attainable level without hardware roots of trust. This proves:
 
 * *Who* built the image (build system identity)
 * *When* it was built (timestamp)
@@ -85,7 +85,7 @@ echo "Konflux UI: $KONFLUX_URL"
 
 . Open `$KONFLUX_URL` in a browser. Log in with your {OCPName} credentials.
 
-. On the landing page, show the *Namespaces* view. Point to the `default-tenant` namespace — this is where customer applications live.
+. On the landing page, show the *Namespaces* view. Point to the `default-tenant` namespace -- this is where customer applications live.
 
 . Navigate to *Namespaces → default-tenant* to show an existing application (if pre-loaded) or walk through creating one in Module 2.
 
@@ -98,7 +98,7 @@ oc get pods -n tsf-tas | grep -E '(fulcio|rekor|tuf)'
 +
 [NOTE]
 ====
-*Presenter tip:* "Fulcio is the certificate authority — it issues short-lived certificates tied to the build identity. Rekor is the transparency log — every signature is recorded there permanently. TUF is the trust root framework. Three components, all open source via the Sigstore project, all running on the customer's own infrastructure."
+*Presenter tip:* "Fulcio is the certificate authority -- it issues short-lived certificates tied to the build identity. Rekor is the transparency log -- every signature is recorded there permanently. TUF is the trust root framework. Three components, all open source via the Sigstore project, all running on the customer's own infrastructure."
 ====
 
 . Show the RHTPA vulnerability dashboard:
