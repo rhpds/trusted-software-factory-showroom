@@ -27,12 +27,7 @@ The problem it solves is real: software supply chain attacks have grown dramatic
 
 === Show
 
-. Open a browser and navigate to the {OCPName} console:
-+
-[source,subs="attributes+"]
-----
-{openshift_console_url}
-----
+. Click the *OCP Console* tab on the right to open the {OCPName} console.
 
 . Log in with your cluster admin credentials:
 +
@@ -43,7 +38,7 @@ The problem it solves is real: software supply chain attacks have grown dramatic
 +
 Point out that Konflux is running as a set of native {OCPName} workloads -- not a SaaS service, not a cloud dependency. It runs on the customer's own cluster.
 
-. Show the namespaces created by {TSFShortName}:
+. In the *Terminal* tab, show the namespaces created by {TSFShortName}:
 +
 [source,bash,role="execute"]
 ----
@@ -79,15 +74,15 @@ The customer gets SLSA (Supply-chain Levels for Software Artifacts) Level 3 prov
 
 === Show
 
-. Get the Konflux UI URL and open it:
+. In the *Terminal* tab, get the Konflux UI URL:
 +
 [source,bash,role="execute"]
 ----
 KONFLUX_URL="https://$(oc get route -n konflux-ui -l konflux.konflux-ci.dev/component=ui,konflux.konflux-ci.dev/owner=konflux-ui -o jsonpath='{.items[0].spec.host}')"
 echo "Konflux UI: $KONFLUX_URL"
 ----
-
-. Open `$KONFLUX_URL` in a browser. Log in with your {OCPName} credentials:
++
+Open `$KONFLUX_URL` in a new browser tab. Log in with your {OCPName} credentials:
 +
 * *Username:* {openshift_cluster_admin_username}
 * *Password:* {openshift_cluster_admin_password}
@@ -96,7 +91,7 @@ echo "Konflux UI: $KONFLUX_URL"
 
 . Navigate to *Namespaces → default-tenant* to show an existing application (if pre-loaded) or walk through creating one in Module 2.
 
-. Switch to the terminal and show the RHTAS signing components:
+. In the *Terminal* tab, show the RHTAS signing components:
 +
 [source,bash,role="execute"]
 ----
