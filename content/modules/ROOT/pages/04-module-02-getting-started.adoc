@@ -287,7 +287,10 @@ When a new CVE is published, RHTPA immediately identifies every image in the reg
 echo "$RHTPA_URL"
 ----
 
-. Log in with your {OCPName} credentials.
+. Log in with your {OCPName} credentials:
++
+* *Username:* {openshift_cluster_admin_username}
+* *Password:* {openshift_cluster_admin_password}
 
 . Navigate to *SBOMs* or *Components* and find `sample-component-golang`.
 
