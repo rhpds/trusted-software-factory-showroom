@@ -1,78 +1,114 @@
-= Workshop overview
+= Demo Overview
+:toc:
+:toc-placement: preamble
 
-== Introduction
+{TSFName} ({TSFShortName}) shows how Red Hat builds, signs, and ships software internally — and how your customers can adopt the same standards.
 
-Welcome to the {TSFName} ({TSFShortName}) workshop. In this hands-on lab, you will deploy and configure a complete secure software supply chain on {OCPName}, then use it to build, sign, and verify your first containerized application with SLSA Level 3 provenance.
+toc::[]
 
-== Business scenario
+== Background
 
-*TechCorp Industries* is a financial services company that develops cloud-native applications on {OCPName}. Their security team has mandated that all container images must be:
+Red Hat ships over 5,000 packages and hundreds of container images every year.
+To do this securely and at scale, Red Hat built Konflux — an end-to-end secure software supply chain platform.
+{TSFName} is that same platform made available for customers to deploy on their own {OCPName} cluster.
 
-* Built using secure, auditable CI/CD pipelines
-* Cryptographically signed with verifiable provenance
-* Scanned for vulnerabilities before deployment
-* Traceable with complete Software Bills of Materials (SBOM)
+This demo tells that story.
+You are not showing a prototype or a reference architecture.
+You are showing the actual system Red Hat uses to build software — running in the customer's hands.
 
-The platform engineering team has been tasked with implementing {TSFName} to meet these requirements while maintaining developer productivity and enabling rapid application delivery.
+== The Customer Problem
 
-As a *platform engineer* at TechCorp, you will:
+Software supply chain attacks are the fastest-growing category of cyber threat.
+High-profile incidents like SolarWinds and Log4Shell showed that attackers no longer break in — they sneak in through dependencies and build pipelines.
 
-. Onboard your first application and trigger a secure build pipeline
-. Validate the cryptographic signatures and SBOM artifacts
+Customers face three compounding pressures:
 
-The steps to install the products on your own cluster are covered in the workshop appendices.
+* *Regulatory pressure* -- Executive Order 14028, NIST SSDF, and emerging EU requirements mandate SBOMs and provenance for software shipped to government and regulated industries.
+* *Audit burden* -- Security teams cannot verify what is in a container image, when it was built, or whether it was tampered with.
+* *Developer friction* -- Bolting signing and scanning onto existing pipelines is painful, fragile, and inconsistent.
 
-== Learning objectives
+The result: teams either skip signing entirely, or spend months building custom tooling that breaks with every upstream change.
 
-By completing this workshop, you will be able to:
+== The {TSFName} Story
 
-* **Access** the Konflux UI and authenticate with Keycloak
-* **Create** applications and components in Konflux
-* **Trigger** secure build pipelines with automatic signing
-* **Validate** SLSA Level 3 provenance and signature artifacts
-* **Analyze** SBOMs and vulnerability reports in {RHTPAName}
+{TSFShortName} eliminates all three problems with a single integrated platform:
 
-== Workshop modules
+* *Konflux* orchestrates every build, test, and release workflow
+* *{RHTASName} (RHTAS)* signs every artifact cryptographically with short-lived certificates — no long-lived keys to rotate or compromise
+* *{RHTPAName} (RHTPA)* generates a full Software Bill of Materials (SBOM) and scans for vulnerabilities automatically
+* Every image gets SLSA (Supply-chain Levels for Software Artifacts) Level 3 provenance — an immutable, signed record of who built it, when, from what source, and using which pipeline
 
-This workshop is organized into the following modules:
+The presenter value proposition in one sentence: *"This is the same platform Red Hat uses to build {OCPName} — now you can use it too."*
 
-Module 1: Preparing your environment for the lab::
-Validate cluster prerequisites, install Podman, create an initial `tsf.env` with API credentials, run the installer container, and confirm `oc` access from inside it.
+== Business Value
 
-Module 2: Getting started with Konflux::
-Create your first application, onboard a component from Git, trigger a secure build pipeline, and verify the signed artifacts with SLSA provenance.
+[cols="1,1",options="header"]
+|===
+| Before {TSFShortName}
+| After {TSFShortName}
 
-Optional modules to learn how to deploy TSF from scratch:
+| Signing is manual, inconsistent, or absent
+| Every image is signed automatically on every push
 
-Appendix A: Preparing to install::
-Similar preparation exercises as Module 1, for readers who follow the appendix sequence only.
+| No visibility into what is in a container image
+| Full SBOM generated and searchable for every build
 
-Appendix B: Installing {TSFShortName}::
-Run the {TSFShortName} installer container, configure integrations with GitHub and Quay, and deploy all components using Helm charts.
+| Provenance is a spreadsheet or a wiki page
+| SLSA Level 3 provenance attached to every image — cryptographically verified
 
-Appendix C: Verifying and accessing::
-Verify successful deployment of all components, access the Konflux UI, and explore the deployed namespaces and services.
+| Compliance evidence is assembled by hand before each audit
+| Continuous, tamper-proof audit trail for every artifact
 
-Appendix D: Troubleshooting::
-Find solutions to common issues.
+| Custom signing tooling breaks with upstream changes
+| Fully managed — Fulcio, Rekor, TUF handled by {TSFShortName}
+|===
 
-== Expected outcomes
+== Running Customer Scenario
 
-After completing this workshop, you will have:
+Throughout this demo, use *TechCorp Industries* as the customer story:
 
-* A fully functional {TSFShortName} deployment on {OCPName}
-* Understanding of secure software supply chain principles
-* Hands-on experience with Konflux, {RHTASName}, and {RHTPAName}
-* A signed container image with SLSA Level 3 provenance
-* Knowledge of how to onboard applications to the secure pipeline
+* A financial services company shipping cloud-native applications on {OCPName}
+* Security team mandating signed images with verifiable provenance for all production workloads
+* Platform engineering team tasked with implementing {TSFShortName} to meet compliance requirements without slowing developers
 
-== Workshop duration
+As the presenter, you are *TechCorp's platform engineering lead* walking the customer through how the team solved this problem.
 
-* **Estimated time:** 50 minutes
-* **Module 1:** 10 minutes
-* **Module 2:** 30 minutes
-* **Wrap-up and Q&A:** 10 minutes
+== Suggested Timing
 
-== Let's begin
+[cols="2,1",options="header"]
+|===
+| Section
+| Time
 
-Ready to implement a secure software supply chain? Click *Next* to start Module 1 and learn about the prerequisites for working with {TSFShortName}.
+| Demo Overview (this page)
+| 5 min
+
+| Module 1 — Secure Software Factory Tour
+| 10 min
+
+| Module 2 — Build, Sign, and Ship with Konflux
+| 25 min
+
+| Conclusion and Q&A
+| 10 min
+
+| *Total*
+| *~50 min*
+|===
+
+== Common Customer Questions
+
+*"How is this different from just running Tekton pipelines?"*
+→ Tekton is the engine. {TSFShortName} adds the signing infrastructure (Fulcio/Rekor/TUF), SBOM generation, vulnerability scanning, release management, and a unified UI — all wired together out of the box.
+
+*"Does Red Hat actually use this internally?"*
+→ Yes. Konflux is the platform Red Hat uses to build {OCPName} and other Red Hat products. {TSFShortName} is that platform packaged for customer deployment.
+
+*"What is SLSA Level 3 and why does it matter?"*
+→ SLSA Level 3 is the highest provenance standard that can be achieved without hardware roots of trust. It proves the build ran in an isolated, ephemeral environment using a specific pipeline definition — making it impossible to forge without compromising the build system itself.
+
+*"We already have a signing process. Why replace it?"*
+→ Most existing signing processes use long-lived keys that must be rotated, stored securely, and audited. {TSFShortName} uses keyless signing via Sigstore — short-lived certificates tied to your OIDC identity. No keys to manage, no keys to compromise.
+
+*"What happens when a new CVE drops?"*
+→ RHTPA continuously scans SBOMs against vulnerability databases. When a new CVE is published, you immediately see which images are affected — without re-scanning from scratch.
