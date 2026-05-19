@@ -70,7 +70,7 @@ The pipeline definitions live in the developer's repository -- version-controlle
 +
 Konflux detects the Dockerfile and selects the appropriate pipeline.
 
-. Go to the GitLab repository and open *Merge requests*.
+. Click the *GitLab* tab and open *Merge requests* in the `tsf/sample-component-golang` repository.
 +
 [NOTE]
 ====
@@ -95,7 +95,7 @@ This separation means security policies are enforced at release time -- not left
 
 === Show
 
-. Download and run the release setup script:
+. In the *Terminal* tab, download and run the release setup script:
 +
 [source,bash,role="execute"]
 ----
@@ -141,11 +141,9 @@ The entire process is recorded. Every step, every input, every output -- all sig
 
 === Show
 
-. Go back to the GitLab repository.
+. Click the *GitLab* tab and open the Konflux onboarding merge request in `tsf/sample-component-golang`.
 
-. Open the Konflux onboarding merge request.
-
-. Merge the pull request.
+. Merge the merge request.
 
 . Return to the Konflux UI and navigate to your application → *Components*.
 +
