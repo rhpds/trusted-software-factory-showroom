@@ -15,6 +15,10 @@ tabs:
   - name: OCP Console
     url: 'https://console-openshift-console.${DOMAIN}'
 
+  # Konflux UI
+  - name: Konflux
+    url: 'https://konflux-ui-konflux-ui.${DOMAIN}'
+
   # GitLab
   - name: GitLab
     url: 'https://gitlab-gitlab.${DOMAIN}'
