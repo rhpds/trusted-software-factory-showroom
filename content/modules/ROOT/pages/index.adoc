@@ -2,7 +2,7 @@
 
 This guide helps sales engineers and technical presenters deliver an effective {TSFName} ({TSFShortName}) demonstration to customers.
 
-Every demo is different — adapt this guide to your specific audience and time constraints.
+Every demo is different -- adapt this guide to your specific audience and time constraints.
 If you have less time than noted, you can skip or shorten individual sections.
 
 == Demo Overview
@@ -11,7 +11,7 @@ The *Demo Overview* section provides the business scenario, background, and comm
 
 [IMPORTANT]
 ====
-Read this section thoroughly before presenting. This demo focuses on business value — the *why* behind secure software supply chains — not just technical features.
+Read this section thoroughly before presenting. This demo focuses on business value -- the *why* behind secure software supply chains -- not just technical features.
 ====
 
 == Demo Details
@@ -31,7 +31,7 @@ This is the main demo content. Each section follows a *Know* and *Show* structur
 
 === Know
 
-The *Know* section gives you business context and background. It is not a script to read aloud — understand it so you can speak naturally to your customer's situation.
+The *Know* section gives you business context and background. It is not a script to read aloud -- understand it so you can speak naturally to your customer's situation.
 
 You'll typically find:
 
@@ -47,7 +47,7 @@ The *Show* section is step-by-step. Follow these presenter actions in order duri
 == Optional: Build Your Own Adventure
 
 Appendices A–C cover the full {TSFShortName} installation process for presenters who want to demonstrate a live install on their own cluster.
-The standard demo uses a pre-provisioned RHDP environment where {TSFShortName} is already deployed — you do not need the appendix for the main demo flow.
+The standard demo uses a pre-provisioned RHDP environment where {TSFShortName} is already deployed -- you do not need the appendix for the main demo flow.
 
 == Let's Get Started
 
