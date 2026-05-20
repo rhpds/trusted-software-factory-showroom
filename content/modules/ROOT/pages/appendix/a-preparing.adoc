@@ -2,13 +2,24 @@
 
 [IMPORTANT]
 ====
-*Optional — Build Your Own Adventure*
+*Optional -- Build Your Own Adventure*
 
 This appendix is for presenters who want to demonstrate a *live {TSFShortName} installation* on their own cluster.
 The standard demo uses a pre-provisioned RHDP environment where {TSFShortName} is already deployed.
 You do not need this appendix for the main demo flow.
 
 If you are doing a self-install, follow Appendices A → B → C in order, then return to the main demo modules.
+====
+
+[TIP]
+====
+*Need an OpenShift cluster to test these steps?*
+
+You can order a multi-node {OCPName} cluster from the RHDP catalog:
+
+link:https://catalog.demo.redhat.com/catalog/babylon-catalog-prod/order/published.ocp4-cluster.prod[Order a Multi-Node OpenShift Cluster^]
+
+Select the *multi-node* option (3+ nodes required -- Single Node OpenShift is not supported by {TSFShortName}).
 ====
 
 == Learning objectives
