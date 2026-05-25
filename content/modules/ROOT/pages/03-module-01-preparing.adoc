@@ -21,7 +21,7 @@ The problem it solves is real: software supply chain attacks have grown dramatic
 
 *Talking points:*
 
-* "Red Hat uses this to build OpenShift -- you can use the same system."
+* "Red Hat uses this to build most of its software -- {OCPName}, RHEL, Ansible -- you can use the same system."
 * "Every image that leaves this pipeline is signed, scanned, and traceable."
 * "When a new CVE drops, you know within minutes which images are affected."
 
@@ -47,7 +47,7 @@ oc get namespaces | grep -E '(tsf|konflux|cert-manager|rhbk|rhtpa|openshift-stor
 +
 [NOTE]
 ====
-*Presenter tip:* Count the namespaces out loud -- there are 13. Each one is a production-grade component: Keycloak for identity, RHTAS for signing, RHTPA for vulnerability analysis, S4 for storage, Quay for the registry. All deployed and wired together by the `tsf deploy` command.
+*Presenter tip:* Count the namespaces out loud. Each one is a production-grade component: Keycloak for identity, RHTAS for signing, RHTPA for vulnerability analysis. Note that Quay and the underlying storage are assumed to be pre-existing in the customer environment -- the `tsf deploy` command handles everything else and wires all components together.
 ====
 
 == Part 2: The Architecture in Action
@@ -58,10 +58,11 @@ oc get namespaces | grep -E '(tsf|konflux|cert-manager|rhbk|rhtpa|openshift-stor
 
 . *GitLab/GitHub webhook* triggers Konflux
 . *OpenShift Pipelines (Tekton)* builds the container image
-. *{RHTASName} (RHTAS)* signs the image using Fulcio (certificate authority) and records the signature in Rekor (transparency log)
+. *{RHTASName} (RHTAS)* signs the image using Fulcio (certificate authority) and records the signature in Rekor (tamper-proof transparency log)
 . *{RHTPAName} (RHTPA)* generates an SBOM and scans for vulnerabilities
 . *Quay* stores the signed image
-. *Release pipeline* promotes the image to the target environment
+. *Conforma* validates the release against ProdSec policies -- signature, provenance, and vulnerability thresholds must all pass
+. *Release pipeline* promotes the image to the target environment only after all checks pass
 
 The customer gets SLSA (Supply-chain Levels for Software Artifacts) Level 3 provenance automatically -- the highest attainable level without hardware roots of trust. This proves:
 
@@ -71,6 +72,8 @@ The customer gets SLSA (Supply-chain Levels for Software Artifacts) Level 3 prov
 * *What source* was used (git commit SHA)
 
 *Why SLSA Level 3 matters:* it is a requirement for federal software supply chain compliance under Executive Order 14028, and increasingly expected by regulated industries.
+
+*Separation of concerns:* ProdSec defines the release policies enforced by Conforma. Platform Engineering manages the standard pipeline templates in Konflux. Developers add a component URL and write application code -- they do not write or maintain pipelines, signing configuration, or release rules.
 
 === Show
 
@@ -92,18 +95,11 @@ oc get pods -n tsf-tas | grep -E '(fulcio|rekor|tuf)'
 +
 [NOTE]
 ====
-*Presenter tip:* "Fulcio is the certificate authority -- it issues short-lived certificates tied to the build identity. Rekor is the transparency log -- every signature is recorded there permanently. TUF is the trust root framework. Three components, all open source via the Sigstore project, all running on the customer's own infrastructure."
+*Presenter tip:* "Fulcio is the certificate authority -- it issues short-lived certificates tied to the build identity. Rekor is the tamper-proof transparency log -- every signature is recorded there permanently and cannot be altered or deleted. TUF is the trust root framework. Three components, all open source via the Sigstore project, all running on the customer's own infrastructure."
 ====
 
-. Show the RHTPA vulnerability dashboard:
-+
-[source,bash,role="execute"]
-----
-RHTPA_URL="https://$(oc get route -n tsf-tpa -l app.kubernetes.io/component=server,app.kubernetes.io/instance=trustedprofileanalyzer -o jsonpath='{.items[0].spec.host}')"
-echo "RHTPA UI: $RHTPA_URL"
-----
-+
-Open `$RHTPA_URL`. Log in with your {OCPName} credentials ({openshift_cluster_admin_username} / {openshift_cluster_admin_password}) and show the SBOM browser or vulnerability summary if a component has already been built.
+. Show the RHTPA vulnerability dashboard by opening `{tpa_url}`.
+Log in with your {OCPName} credentials ({openshift_cluster_admin_username} / {openshift_cluster_admin_password}) and show the SBOM browser or vulnerability summary if a component has already been built.
 
 . Wrap up with the architecture summary:
 +

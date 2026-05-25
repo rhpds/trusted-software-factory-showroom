@@ -21,6 +21,7 @@ The developer does not configure Tekton, Fulcio, Rekor, or Quay separately. They
 
 * "From the developer's perspective, they click 'Add component' and paste a Git URL. Everything else is automated."
 * "TechCorp's security team mandated signed images. With {TSFShortName}, developers don't even know signing is happening -- it's part of the pipeline."
+* "TechCorp's Platform Engineering team doesn't write or maintain these pipelines. Red Hat maintains the standard templates centrally. When ProdSec updates a security requirement, it flows through automatically -- developers just add a component and focus on code."
 
 === Show
 
@@ -51,6 +52,8 @@ The pipeline definitions live in the developer's repository -- version-controlle
 
 *Why this matters for security:* if a pipeline definition could be changed outside version control, an attacker could silently modify the build steps -- and the resulting image would still appear to come from the correct source. Storing `.tekton/` in the repo closes that gap.
 
+*What this means for teams:* Platform Engineering manages the standard pipeline templates maintained by Red Hat. ProdSec requirements are already encoded in those templates. Developers who use company-standard pipelines are ProdSec-compliant from the first commit -- without maintaining their own task definitions or customizations unless they specifically need to.
+
 === Show
 
 . From the application page, click *Actions → Add component*.
@@ -74,7 +77,9 @@ Konflux detects the Dockerfile and selects the appropriate pipeline.
 +
 [NOTE]
 ====
-*Presenter tip:* "See this pull request from Konflux? It added `.tekton/pull-request.yaml` and `.tekton/push.yaml` -- the full pipeline definitions. These are now version-controlled in the application repository. Any change to the build process has to go through code review. That is part of how SLSA Level 3 provenance works -- the build is hermetic and the pipeline definition is immutable for that build."
+*Presenter tip:* "See this pull request from Konflux? It added `.tekton/pull-request.yaml` and `.tekton/push.yaml` -- the full pipeline definitions. These are now version-controlled in the application repository. Any change to the build process has to go through code review. That is part of how SLSA Level 3 provenance works -- the build is hermetic and the pipeline definition is immutable for that build.
+
+Konflux also automatically configured the webhook in GitLab -- future pushes and pull requests will trigger the secure pipeline without any manual setup."
 
 *Do not merge the PR yet* -- you need to configure release first.
 ====
@@ -109,7 +114,7 @@ chmod +x setup-release.sh
 +
 [source,bash,role="execute"]
 ----
-./setup-release.sh -a sample-application -t default-tenant -m default-tenant
+./setup-release.sh -a sample-application
 ----
 +
 [NOTE]
@@ -278,14 +283,7 @@ When a new CVE is published, RHTPA immediately identifies every image in the reg
 
 === Show
 
-. Open the RHTPA UI:
-+
-[source,bash,role="execute"]
-----
-echo "$RHTPA_URL"
-----
-
-. Log in with your {OCPName} credentials:
+. Open the RHTPA UI at `{tpa_url}` and log in with your {OCPName} credentials:
 +
 * *Username:* {openshift_cluster_admin_username}
 * *Password:* {openshift_cluster_admin_password}

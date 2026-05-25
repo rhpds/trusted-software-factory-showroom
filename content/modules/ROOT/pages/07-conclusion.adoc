@@ -2,7 +2,7 @@
 
 == What You Showed
 
-In this demo, TechCorp Industries solved their secure software supply chain challenge using {TSFName} -- the same platform Red Hat uses to build {OCPName}.
+In this demo, TechCorp Industries solved their secure software supply chain challenge using {TSFName} -- the same platform Red Hat uses to build most of its software portfolio.
 
 The customer saw:
 
@@ -10,19 +10,31 @@ The customer saw:
 * *Automatic image signing* using {RHTASName} -- no long-lived keys, no manual steps
 * *SLSA Level 3 provenance* attached to every image -- cryptographically verified and stored in Rekor
 * *SBOM generation and vulnerability scanning* with {RHTPAName} -- continuous, not just at build time
+* *Policy-enforced release gating* with Conforma -- automatic compliance checks before any image reaches production
 * *A unified developer experience* -- developers push code, the pipeline handles the rest
 
 == Key Messages to Reinforce
 
-* "Red Hat builds {OCPName} with this. You can use the same system."
+* "Red Hat builds most of its software -- {OCPName}, RHEL, Ansible -- with this. You can use the same system."
 * "Signing, provenance, and SBOMs are automatic -- not optional extras."
+* "Conforma enforces TechCorp's release policies automatically -- security requirements are a gate, not a checklist."
 * "When the next supply chain attack hits, TechCorp will know immediately which images are affected."
 
 == Key Concepts Recap
 
 === Konflux
 
-Konflux is the orchestration layer that ties the secure software supply chain together. It provides application and component management, pipeline definitions, release plans, and integration with source control and registries.
+Konflux is the orchestration layer that ties the secure software supply chain together. It provides application and component management, pipeline definitions, release plans, and integration with source control and registries. Red Hat uses Konflux to build most of its software portfolio -- from {OCPName} and RHEL to Ansible.
+
+=== Conforma
+
+Conforma is the policy engine that validates every release against security rules set by the ProdSec team:
+
+* *Policy-as-code* -- release rules are version-controlled and auditable
+* *Automatic gating* -- images that fail signature checks, vulnerability thresholds, or provenance requirements are blocked before promotion
+* *Separation of concerns* -- ProdSec defines the rules, Konflux enforces them, developers write code
+
+A release that fails Conforma never reaches the target environment -- no exceptions, no overrides by individual teams.
 
 === SLSA Provenance
 
@@ -37,7 +49,7 @@ Supply-chain Levels for Software Artifacts (SLSA) Level 3 provenance:
 Red Hat Trusted Artifact Signer (RHTAS), based on Sigstore, provides:
 
 * *Fulcio* -- certificate authority that issues short-lived signing certificates
-* *Rekor* -- transparency log that records every signature permanently
+* *Rekor* -- tamper-proof transparency log that records every signature permanently
 * *TUF* -- trust root framework for secure distribution of signing metadata
 
 Signatures are tied to build identity via OIDC -- no long-lived keys to manage or compromise.

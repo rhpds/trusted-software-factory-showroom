@@ -8,13 +8,13 @@ toc::[]
 
 == Background
 
-Red Hat ships over 5,000 packages and hundreds of container images every year.
+Red Hat ships over 5,000 packages and hundreds of container images every year -- from RHEL to {OCPName} to Ansible.
 To do this securely and at scale, Red Hat built Konflux -- an end-to-end secure software supply chain platform.
 {TSFName} is that same platform made available for customers to deploy on their own {OCPName} cluster.
 
 This demo tells that story.
 You are not showing a prototype or a reference architecture.
-You are showing the actual system Red Hat uses to build software -- running in the customer's hands.
+You are showing the actual system Red Hat uses to build its software -- running in the customer's hands.
 
 == The Customer Problem
 
@@ -38,7 +38,7 @@ The result: teams either skip signing entirely, or spend months building custom 
 * *{RHTPAName} (RHTPA)* generates a full Software Bill of Materials (SBOM) and scans for vulnerabilities automatically
 * Every image gets SLSA (Supply-chain Levels for Software Artifacts) Level 3 provenance -- an immutable, signed record of who built it, when, from what source, and using which pipeline
 
-The presenter value proposition in one sentence: *"This is the same platform Red Hat uses to build {OCPName} -- now you can use it too."*
+The presenter value proposition in one sentence: *"This is the same platform Red Hat uses to build its products -- from RHEL to {OCPName} -- now you can use it too."*
 
 == Business Value
 
@@ -102,7 +102,7 @@ As the presenter, you are *TechCorp's platform engineering lead* walking the cus
 → Tekton is the engine. {TSFShortName} adds the signing infrastructure (Fulcio/Rekor/TUF), SBOM generation, vulnerability scanning, release management, and a unified UI -- all wired together out of the box.
 
 *"Does Red Hat actually use this internally?"*
-→ Yes. Konflux is the platform Red Hat uses to build {OCPName} and other Red Hat products. {TSFShortName} is that platform packaged for customer deployment.
+→ Yes. Konflux is the platform Red Hat uses to build most of its software -- from {OCPName} and RHEL to Ansible. {TSFShortName} is that platform packaged for customer deployment.
 
 *"What is SLSA Level 3 and why does it matter?"*
 → SLSA Level 3 is the highest provenance standard that can be achieved without hardware roots of trust. It proves the build ran in an isolated, ephemeral environment using a specific pipeline definition -- making it impossible to forge without compromising the build system itself.
