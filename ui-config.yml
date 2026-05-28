@@ -21,6 +21,10 @@ tabs:
     url: 'https://konflux-ui-konflux-ui.${DOMAIN}'
     external: false
 
+  - name: Quay
+    url: 'https://quay-${GUID}-1.${DOMAIN}'
+    external: false
+
   - name: GitLab
     url: 'https://gitlab-gitlab.${DOMAIN}'
     external: false
