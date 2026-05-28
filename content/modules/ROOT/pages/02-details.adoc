@@ -1,42 +1,137 @@
-= Workshop details
+= Demo Details
 
-== Technical requirements
+== Proposed Timing
 
-=== Local workstation tools
+* *Total demo duration:* ~50 minutes
+* Module 1 -- Secure Software Factory Tour: 10 min
+* Module 2 -- Build, Sign, and Ship with Konflux: 25 min
+* Conclusion and Q&A: 10 min
 
-Your local machine needs:
+Adjust as needed for your audience. Module 2 is the core demo -- prioritize it if time is short.
 
-* **{OCPCli} CLI:** OpenShift command-line tool installed and configured
-* **Podman:** Container runtime (Docker is not supported)
-* **Web browser:** Modern browser for accessing Konflux UI
-* **Text editor:** For creating and editing configuration files
+== Demo Environment
 
-== Workshop environment
+This demo uses a pre-provisioned {OCPName} cluster with {TSFShortName} already deployed.
 
-=== Provided cluster
+=== Cluster Access
 
-For this workshop, you have access to:
+[cols="1,2",options="header"]
+|===
+| Resource
+| Value
 
-* **{OCPName} cluster:** {OCPVersion}
-* **Console URL:** {openshift_console_url}
-* **Kubernetes API (for `{OCPCli}` login):** {openshift_api_url}
-* **Cluster-admin access:** Full administrative privileges
-* A self-hosted GitLab service
-* A self-hosted Quay service
+| {OCPName} console
+| {openshift_cluster_console_url}
 
-== Support and documentation
+| {OCPShortName} API
+| {openshift_api_server_url}
 
-Links to the featured products used in this demo:
+| Cluster ingress domain
+| {openshift_cluster_ingress_domain}
+|===
 
-* **{TSFShortName} documentation:** link:https://redhat-appstudio.github.io/tsf-cli/tsf/index.html[Official TSF docs^]
-* **Konflux documentation:** link:https://konflux-ci.dev/docs/[Konflux project docs^]
-* **{RHTASName} documentation:** link:https://docs.redhat.com/en/documentation/red_hat_trusted_artifact_signer[RHTAS docs^]
-* **{RHTPAName} documentation:** link:https://docs.redhat.com/en/documentation/red_hat_trusted_profile_analyzer[RHTPA docs^]
+=== TSF Component URLs
 
-== Workshop authors
+[cols="1,2",options="header"]
+|===
+| Component
+| URL
 
-This workshop was created by the Red Hat Advanced Developer Suite team.
+| Konflux UI
+| {konflux_ui_url}
 
-== Ready to start?
+| Quay Registry
+| {quay_console_url}
 
-Click *Next* to begin Module 1.
+| GitLab
+| {gitlab_url}
+
+| {RHTPAName} (RHTPA)
+| {tpa_url}
+
+| Fulcio (RHTAS)
+| {tas_route_1_url}
+
+| Rekor (RHTAS)
+| {tas_route_3_url}
+
+| TUF (RHTAS)
+| {tas_route_4_url}
+
+| Argo CD (OpenShift GitOps)
+| {openshift_gitops_server}
+|===
+
+== Credentials
+
+=== Cluster Admin (for demo)
+
+* *Username:* {openshift_cluster_admin_username}
+* *Password:* {openshift_cluster_admin_password}
+
+=== GitLab
+
+* *URL:* {gitlab_url}
+* *Username:* {gitlab_username}
+* *Password:* {password}
+* *Root username:* {gitlab_root_username}
+* *Root password:* {gitlab_root_password}
+
+=== Quay Registry
+
+* *URL:* {quay_console_url}
+* *Admin username:* {quay_admin_username}
+* *Admin password:* {quay_admin_password}
+
+== Products and Versions
+
+[cols="2,1",options="header"]
+|===
+| Product
+| Version
+
+| {OCPName} ({OCPShortName})
+| {OCPVersion}
+
+| Konflux
+| Deployed via {TSFShortName} installer
+
+| {RHTASName} (RHTAS)
+| Deployed via {TSFShortName} installer
+
+| {RHTPAName} (RHTPA)
+| Deployed via {TSFShortName} installer
+
+| Red Hat Quay
+| Pre-existing (customer-managed; not deployed by {TSFShortName} installer)
+
+| Red Hat Build of Keycloak
+| Deployed via {TSFShortName} installer
+
+| {TSFShortName} Installer image
+| {TSFInstallerImage}
+|===
+
+== Troubleshooting
+
+See xref:appendix/d-troubleshooting.adoc[Appendix D: Troubleshooting] for known issues during pipeline runs, image pushes, and webhook configuration.
+
+== Follow-up Resources
+
+* link:https://redhat-appstudio.github.io/tsf-cli/tsf/index.html[{TSFName} documentation^]
+* link:https://konflux-ci.dev/docs/[Konflux documentation^]
+* link:https://docs.redhat.com/en/documentation/red_hat_trusted_artifact_signer[{RHTASName} documentation^]
+* link:https://docs.redhat.com/en/documentation/red_hat_trusted_profile_analyzer[{RHTPAName} documentation^]
+* link:https://slsa.dev/[SLSA framework^]
+* link:https://www.sigstore.dev/[Sigstore project^]
+
+== Authors
+
+* Tyrell Reddy
+
+== Support
+
+For help with instructions or environment issues:
+
+* Open an RHDP link:https://red.ht/rhdp-ticket[Support Ticket^]
+* Slack: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]

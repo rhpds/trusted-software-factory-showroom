@@ -1,18 +1,18 @@
-* xref:index.adoc[Workshop Home]
+* xref:index.adoc[Demo Guide]
 
-.Getting Started
-* xref:01-overview.adoc[Workshop Overview]
-* xref:02-details.adoc[Workshop Details]
+.Demo Overview
+* xref:01-overview.adoc[Demo Overview]
+* xref:02-details.adoc[Demo Details]
 
-.Hands-on Modules
-* xref:03-module-01-preparing.adoc[Module 1: Preparing your environment for the lab]
-* xref:04-module-02-getting-started.adoc[Module 2: Getting Started with Konflux]
+.Demo Modules
+* xref:03-module-01-preparing.adoc[Module 1: The Secure Software Factory Tour]
+* xref:04-module-02-getting-started.adoc[Module 2: Build, Sign, and Ship with Konflux]
 
-.Appendix
+.Wrap-up
+* xref:07-conclusion.adoc[Conclusion]
+
+.Optional: Build Your Own Adventure
 * xref:appendix/a-preparing.adoc[Appendix A: Preparing to install]
 * xref:appendix/b-installing.adoc[Appendix B: Installing TSF]
 * xref:appendix/c-verifying.adoc[Appendix C: Verifying and accessing]
 * xref:appendix/d-troubleshooting.adoc[Appendix D: Troubleshooting]
-
-.Wrap-up
-* xref:07-conclusion.adoc[Conclusion]

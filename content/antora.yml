@@ -1,6 +1,7 @@
 name: modules
-title: Trusted Software Factory Workshop
+title: Trusted Software Factory Demo
 version: ~
+start_page: index.adoc
 nav:
   - modules/ROOT/nav.adoc
 

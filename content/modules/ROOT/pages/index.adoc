@@ -1,53 +1,54 @@
-= {TSFName} Workshop
+= How to Use This Demo Guide
 
-Welcome to the {TSFName} ({TSFShortName}) workshop!
+This guide helps sales engineers and technical presenters deliver an effective {TSFName} ({TSFShortName}) demonstration to customers.
 
-== What you'll learn
+Every demo is different -- adapt this guide to your specific audience and time constraints.
+If you have less time than noted, you can skip or shorten individual sections.
 
-In this workshop, you will learn how to deploy and use {TSFName}, a secure software supply chain solution for {OCPName}. By the end of this workshop, you will be able to:
+== Demo Overview
 
-* Access the Konflux UI
-* Build, sign, and verify your first container image with SLSA Level 3 provenance
-* Understand how {TSFShortName} integrates {RHTASName} for cryptographic signing
-* Generate and analyze Software Bills of Materials (SBOM) with {RHTPAName}
+The *Demo Overview* section provides the business scenario, background, and common customer questions to be ready for.
 
-== Who this is for
+[IMPORTANT]
+====
+Read this section thoroughly before presenting. This demo focuses on business value -- the *why* behind secure software supply chains -- not just technical features.
+====
 
-This workshop is designed for platform engineers, DevSecOps practitioners, and developers who want to implement secure software supply chain practices on {OCPName}. You should have:
+== Demo Details
 
-* Basic knowledge of {OCPName} and Kubernetes concepts
-* Familiarity with CI/CD pipelines (Tekton)
-* Understanding of container images and registries
-* Experience with GitHub/GitLab workflows
+The *Demo Details* section is your single reference for:
 
-== What is {TSFName}?
+* Proposed timing
+* Products and versions
+* Environment access and credentials
+* Troubleshooting tips
+* Follow-up resources
+* Author contacts
 
-{TSFName} is a deployable instance of Konflux that brings a complete secure software supply chain to your {OCPName} cluster. It integrates multiple Red Hat technologies to enable:
+== Demo Modules
 
-* **Secure build pipelines** -- Tekton-based CI/CD that generates signed container images with SLSA Level 3 provenance
-* **Artifact signing** -- Automatic cryptographic signing using {RHTASName}
-* **Software bill of materials** -- SBOM generation with vulnerability scanning
-* **Identity management** -- Keycloak-based authentication and access control
-* **Container registry integration** -- Automated deployment to Quay
+This is the main demo content. Each section follows a *Know* and *Show* structure:
 
-== Prerequisites
+=== Know
 
-Before starting this workshop, you should have access to:
+The *Know* section gives you business context and background. It is not a script to read aloud -- understand it so you can speak naturally to your customer's situation.
 
-* {OCPName} cluster running version {OCPVersion} or later (3+ nodes, not SNO)
-* Cluster-admin privileges
-* The self-hosted Quay instance running on the cluster
-* The self-hosted GitLab instance running on the cluster
-* Local workstation with:
-** {OCPCli} CLI installed
-** Podman installed (Docker not supported)
+You'll typically find:
 
-== Workshop environment
+* Business challenge
+* Technical solution
+* Business value and outcomes
+* Common objections
 
-This workshop uses a dedicated {OCPName} cluster. Use this cluster to build and release your first secure application
+=== Show
 
-Access your cluster console at: {openshift_console_url}
+The *Show* section is step-by-step. Follow these presenter actions in order during the live demonstration.
 
-== Let's get started!
+== Optional: Build Your Own Adventure
 
-Click on the next section to begin learning about {TSFName} and preparing for installation.
+Appendices A–C cover the full {TSFShortName} installation process for presenters who want to demonstrate a live install on their own cluster.
+The standard demo uses a pre-provisioned RHDP environment where {TSFShortName} is already deployed -- you do not need the appendix for the main demo flow.
+
+== Let's Get Started
+
+Begin with the *Demo Overview*, then walk through the demo modules in order.

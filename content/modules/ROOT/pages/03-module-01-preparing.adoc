@@ -1,249 +1,109 @@
-= Module 1: Preparing your environment for the lab
+= Module 1: The Secure Software Factory Tour
 
-== Learning objectives
+This module introduces {TSFName} ({TSFShortName}) and walks through the deployed environment -- showing the customer what they would get and how the components work together.
 
-By the end of this module, you will be able to:
+== Part 1: What is {TSFName}?
 
-* Verify cluster version, and admin access required for {TSFShortName} installation
-* Install Podman and create an initial environment file (`tsf.env`) with {OCPName} API credentials
-* Run the installer container and confirm your environment loads inside it
-* Authenticate to the cluster from inside the installer container using the {OCPCli}
+=== Know
 
-== Introduction
+Red Hat ships {OCPName}, RHEL, and hundreds of other products every year. To do this securely and at scale, Red Hat built Konflux -- an internal secure software supply chain platform. *{TSFName} is that same platform, packaged for customer deployment.*
 
-Before installing {TSFShortName}, you need a healthy {OCPName} cluster and a workstation setup that can run the installer. This module walks you through validating cluster prerequisites, installing Podman, creating an initial `tsf.env` for cluster credentials, and confirming authentication from inside the installer container.
+This is not a reference architecture or a prototype. This is production software Red Hat trusts to build its own products.
 
-Think of this as *TechCorp's platform engineering team* validating access to the cluster and local tooling before onboarding a repository to the secure software supply chain.
+The problem it solves is real: software supply chain attacks have grown dramatically. Attackers no longer break into production systems directly -- they compromise the build pipeline, inject malicious code into dependencies, or tamper with artifacts in transit. Customers need to prove that every container image they ship:
 
-== Exercise 1: Verify cluster prerequisites
+* Was built from verified source code
+* Was not tampered with after the build
+* Contains only known, scanned components
+* Can be traced to a specific pipeline run and commit
 
-In this exercise, you will verify that your {OCPName} cluster meets the requirements for {TSFShortName} installation.
+{TSFShortName} makes all of that automatic. No custom tooling, no long-lived signing keys, no manual SBOM assembly.
 
-=== Verify cluster version
+*Talking points:*
 
-. Login to your {OCPName} cluster using the {OCPCli} CLI.
+* "Red Hat uses this to build most of its software -- {OCPName}, RHEL, Ansible -- you can use the same system."
+* "Every image that leaves this pipeline is signed, scanned, and traceable."
+* "When a new CVE drops, you know within minutes which images are affected."
+
+=== Show
+
+. Click the *OCP Console* tab on the right to open the {OCPName} console.
+
+. Log in with your cluster admin credentials:
 +
-Use your cluster Kubernetes API endpoint (typically `https://api.<cluster>:6443`; it matches `{openshift_api_url}` in this workshop and aligns with `OCP__API_ENDPOINT` for the installer shell).
-+
-[source,bash,role="execute",subs="attributes+"]
-----
-oc login {openshift_api_url}
-----
+* *Username:* {openshift_cluster_admin_username}
+* *Password:* {openshift_cluster_admin_password}
 
-. Check the cluster version to ensure it meets the minimum requirement.
+. In the left navigation, go to *Workloads → Pods* and switch namespace to `konflux-ui`.
 +
-[source,role="execute"]
-----
-oc version
-----
-+
-Expected output:
-+
-----
-Client Version: 4.20.x
-Kubernetes Version: v1.33.x
-Server Version: 4.20.x
-----
+Point out that Konflux is running as a set of native {OCPName} workloads -- not a SaaS service, not a cloud dependency. It runs on the customer's own cluster.
 
-=== Verify cluster topology
-
-. Check that you have at least 3 nodes with the **master** role in your cluster.
+. In the *Terminal* tab, show the namespaces created by {TSFShortName}:
 +
-[source,role="execute"]
+[source,bash,role="execute"]
 ----
-oc get nodes
+oc get namespaces | grep -E '(tsf|konflux|cert-manager|rhbk|rhtpa|openshift-storage)'
 ----
 +
-Expected output:
-+
-----
-NAME                                         STATUS   ROLES                  AGE   VERSION
-master-0.cluster-abc123.ocpv00.rhdp.net     Ready    control-plane,master   5d    v1.33.4
-master-1.cluster-abc123.ocpv00.rhdp.net     Ready    control-plane,master   5d    v1.33.4
-master-2.cluster-abc123.ocpv00.rhdp.net     Ready    control-plane,master   5d    v1.33.4
-----
-
-=== Verify
-
-✓ Cluster is running {OCPName} {OCPVersion} or later +
-✓ Cluster has 3 or more nodes (not Single Node OpenShift) +
-
-== Exercise 2: Create the environment configuration file
-
-In this exercise, you will create the `tsf.env` file that holds the {OCPName} variables the installer image loads before you authenticate with `oc` from inside the container.
-
-=== Install Podman locally
-
-If you haven't already done so, install Podman on your local workstation.
-
-For RHEL/Fedora:
-[source,bash]
-----
-sudo dnf install podman
-----
-
-For macOS:
-[source,bash]
-----
-brew install podman
-----
-
-Verify installation:
-[source,bash]
-----
-podman --version
-----
-
-[WARNING]
+[NOTE]
 ====
-Docker is not supported. You must use Podman for this installation.
+*Presenter tip:* Count the namespaces out loud. Each one is a production-grade component: Keycloak for identity, RHTAS for signing, RHTPA for vulnerability analysis. Note that Quay and the underlying storage are assumed to be pre-existing in the customer environment -- the `tsf deploy` command handles everything else and wires all components together.
 ====
 
-=== Create tsf.env
+== Part 2: The Architecture in Action
 
-Create a file named `tsf.env` with the following content:
+=== Know
 
-[source,bash]
-----
-OCP__API_ENDPOINT=<your_cluster_api_url>
-OCP__USERNAME=<your_cluster_admin_username>
-OCP__PASSWORD=<your_cluster_admin_password>
-----
+{TSFShortName} deploys nine integrated components as Helm charts. When a developer pushes code, this is what happens automatically:
 
-Replace the placeholders with your actual values.
+. *GitLab/GitHub webhook* triggers Konflux
+. *OpenShift Pipelines (Tekton)* builds the container image
+. *{RHTASName} (RHTAS)* signs the image using Fulcio (certificate authority) and records the signature in Rekor (tamper-proof transparency log)
+. *{RHTPAName} (RHTPA)* generates an SBOM and scans for vulnerabilities
+. *Quay* stores the signed image
+. *Conforma* validates the release against ProdSec policies -- signature, provenance, and vulnerability thresholds must all pass
+. *Release pipeline* promotes the image to the target environment only after all checks pass
 
-=== Example tsf.env
+The customer gets SLSA (Supply-chain Levels for Software Artifacts) Level 3 provenance automatically -- the highest attainable level without hardware roots of trust. This proves:
 
-Here's an example for TechCorp:
+* *Who* built the image (build system identity)
+* *When* it was built (timestamp)
+* *How* it was built (pipeline definition and steps)
+* *What source* was used (git commit SHA)
 
-[source,bash]
-----
-OCP__API_ENDPOINT=https://api.cluster-abc123.ocpv00.rhdp.net:6443
-OCP__USERNAME=kubeadmin
-OCP__PASSWORD=S3cur3P@ssw0rd
-----
+*Why SLSA Level 3 matters:* it is a requirement for federal software supply chain compliance under Executive Order 14028, and increasingly expected by regulated industries.
 
-=== Secure the file
+*Separation of concerns:* ProdSec defines the release policies enforced by Conforma. Platform Engineering manages the standard pipeline templates in Konflux. Developers add a component URL and write application code -- they do not write or maintain pipelines, signing configuration, or release rules.
 
-[IMPORTANT]
-====
-The `tsf.env` file contains sensitive credentials. Protect this file:
+=== Show
 
-[source,bash]
-----
-chmod 600 tsf.env
-----
-
-Do not commit this file to version control.
-====
-
-=== Verify
-
-✓ Podman installed on local workstation +
-✓ `tsf.env` file created with OCP credential variables +
-✓ File permissions set to 600 +
-✓ All placeholders replaced with actual values +
-
-== Exercise 3: Start the installer container
-
-In this exercise, you will pull and run the {TSFShortName} installer container.
-
-=== Run the installer
-
-. On your local workstation, ensure you're in the directory containing your `tsf.env` file.
-
-. Run the installer container with Podman.
+. Click the *Konflux* tab to open the Konflux UI. Log in with your {OCPName} credentials:
 +
-[source,bash,role="execute",subs="attributes+"]
+* *Username:* {openshift_cluster_admin_username}
+* *Password:* {openshift_cluster_admin_password}
+
+. On the landing page, show the *Namespaces* view. Point to the `default-tenant` namespace -- this is where customer applications live.
+
+. Navigate to *Namespaces → default-tenant* to show an existing application (if pre-loaded) or walk through creating one in Module 2.
+
+. In the *Terminal* tab, show the RHTAS signing components:
++
+[source,bash,role="execute"]
 ----
-podman run -it --rm --env-file tsf.env \
-  --entrypoint bash --pull always \
-  {TSFInstallerImage} --login
+oc get pods -n tsf-tas | grep -E '(fulcio|rekor|tuf)'
 ----
 +
-This command:
-+
---
-** Pulls the latest installer image
-
-** Loads environment variables from `tsf.env`
-
-** Starts an interactive bash shell inside the container
---
-
-=== Verify container is running
-
-You should see output indicating the image is being pulled, followed by a bash prompt inside the container:
-
-----
-Trying to pull quay.io/redhat-ads/tsf-cli:latest...
-Getting image source signatures
-...
-bash-5.1$
-----
-
-=== Verify
-
-✓ Installer container downloaded successfully +
-✓ Interactive bash shell is running +
-✓ Environment variables from tsf.env are loaded +
-
-[TIP]
+[NOTE]
 ====
-The `--pull always` flag ensures you get the latest installer version. The image is updated frequently.
+*Presenter tip:* "Fulcio is the certificate authority -- it issues short-lived certificates tied to the build identity. Rekor is the tamper-proof transparency log -- every signature is recorded there permanently and cannot be altered or deleted. TUF is the trust root framework. Three components, all open source via the Sigstore project, all running on the customer's own infrastructure."
 ====
 
-== Exercise 4: Login to the cluster
+. Show the RHTPA vulnerability dashboard by opening `{tpa_url}`.
+Log in with your {OCPName} credentials ({openshift_cluster_admin_username} / {openshift_cluster_admin_password}) and show the SBOM browser or vulnerability summary if a component has already been built.
 
-In this exercise, you will authenticate to your {OCPName} cluster from within the installer container.
-
-=== Login with oc CLI
-
-. Inside the container, login to your cluster using the {OCPCli} CLI.
+. Wrap up with the architecture summary:
 +
-[source,role="execute"]
-----
-oc login "$OCP__API_ENDPOINT" \
-  --username "$OCP__USERNAME" \
-  --password "$OCP__PASSWORD"
-----
-+
-The environment variables from `tsf.env` are automatically available.
-
-. Verify if your current user has administrator (cluster-admin) permissions across the cluster.
-+
-[source,role="execute"]
-----
-oc auth can-i '*' '*' --all-namespaces
-----
-+
-Expected output:
-+
-----
-yes
-----
-
-=== Verify
-
-✓ Successfully authenticated to {OCPName} cluster +
-✓ Cluster-admin user confirmed +
-
-== Learning outcomes
-
-Let's verify what you've accomplished in this module:
-
-* ✓ You verified your {OCPName} cluster meets the requirements ({OCPVersion}+, 3+ nodes)
-* ✓ You installed Podman locally and created an initial `tsf.env` with OCP credential variables populated
-* ✓ You pulled and ran the installer container so your environment loads in the interactive shell
-* ✓ You logged in with {OCPCli} from inside the container and confirmed your cluster-admin identity
-
-== Summary
-
-In this module, you prepared your workstation and validated access for {TSFShortName} installation:
-
-* Verified cluster prerequisites and connectivity
-* Installed Podman and secured an initial `tsf.env` containing {OCPName} credentials
-* Started the installer container and confirmed your environment loads inside it
-* Authenticated to the cluster from the installer shell
-
-You can continue with the Konflux onboarding exercise in the next module.
+[NOTE]
+====
+*Presenter closing for this module:* "What you are seeing is a complete, production-grade secure software supply chain running on your own {OCPName} cluster. Everything Red Hat used to build this version of OpenShift. In the next section we'll build, sign, and verify an application live."
+====
