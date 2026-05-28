@@ -22,7 +22,7 @@ tabs:
     external: false
 
   - name: Quay
-    url: 'https://quay-${GUID}-1.${DOMAIN}'
+    url: 'https://quay-${GUID}.${DOMAIN}'
     external: false
 
   - name: GitLab
