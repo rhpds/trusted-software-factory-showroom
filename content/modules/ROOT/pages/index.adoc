@@ -49,6 +49,10 @@ The *Show* section is step-by-step. Follow these presenter actions in order duri
 Appendices A–C cover the full {TSFShortName} installation process for presenters who want to demonstrate a live install on their own cluster.
 The standard demo uses a pre-provisioned RHDP environment where {TSFShortName} is already deployed -- you do not need the appendix for the main demo flow.
 
+== Troubleshooting
+
+If you encounter any issues during the demonstration, review Appendix D for solutions. 
+
 == Let's Get Started
 
 Begin with the *Demo Overview*, then walk through the demo modules in order.
