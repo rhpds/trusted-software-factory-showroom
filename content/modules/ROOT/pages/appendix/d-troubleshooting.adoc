@@ -72,6 +72,14 @@ These tips match the hands-on modules: login failures, slow or stuck pipeline ru
 
 . Click the refresh icon next to the name of the tab, and then try to log in again.
 
+=== Issue: Error message on a UI page
+
+**Problem:** When you try to complete any action in one of the user interface tabs (*OCP Console*, *Konflux*, *GitLab*), an error message, such as *Page not found*, displays.
+
+**Solution:** 
+
+. Click the refresh icon next to the name of the tab, and then try to complete the action again. You might need to log into the UI again.
+
 === Issue: Konflux UI does not show an application
 
 **Problem:** After you create an application and then view releases for it, when you click the *Applications* navigation item in the Konflux UI, no application is visible.
