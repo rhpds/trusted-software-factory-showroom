@@ -10,20 +10,20 @@ Red Hat ships {OCPName}, RHEL, and hundreds of other products every year. To do 
 
 This is not a reference architecture or a prototype. This is production software Red Hat trusts to build its own products.
 
-The problem it solves is real: software supply chain attacks have grown dramatically. Attackers no longer break into production systems directly -- they compromise the build pipeline, inject malicious code into dependencies, or tamper with artifacts in transit. Customers need to prove that every container image they ship:
+The problem it solves is real: software supply chain attacks have grown dramatically. Attackers aim to include insecure code in software shipped by reputable companies. For this purpose, they compromise the build pipeline, inject malicious code into dependencies, or tamper with artifacts in transit. Customers need to prove that every deliverable they ship:
 
 * Was built from verified source code
 * Was not tampered with after the build
 * Contains only known, scanned components
 * Can be traced to a specific pipeline run and commit
 
-{TSFShortName} makes all of that automatic. No custom tooling, no long-lived signing keys, no manual SBOM assembly.
+{TSFShortName} makes this proof automatic. The process does not require custom tooling, long-lived signing keys, or manual SBOM assembly.
 
 *Talking points:*
 
-* "Red Hat uses this to build most of its software -- {OCPName}, RHEL, Ansible -- you can use the same system."
-* "Every image that leaves this pipeline is signed, scanned, and traceable."
-* "When a new CVE drops, you know within minutes which images are affected."
+* "Red Hat uses this tooling to build most of its software -- {OCPName}, RHEL, Ansible -- you can use the same system."
+* "Every deliverable, such as a container image, that leaves this pipeline is signed, scanned, and traceable."
+* "When a new CVE drops, you know within minutes which deliverables are affected."
 
 === Show
 
@@ -34,7 +34,7 @@ The problem it solves is real: software supply chain attacks have grown dramatic
 * *Username:* {openshift_cluster_admin_username}
 * *Password:* {openshift_cluster_admin_password}
 
-. In the left navigation, go to *Workloads → Pods* and switch namespace to `konflux-ui`.
+. In the left navigation, go to *Workloads → Pods* and switch *Project* to `konflux-ui`.
 +
 Point out that Konflux is running as a set of native {OCPName} workloads -- not a SaaS service, not a cloud dependency. It runs on the customer's own cluster.
 
@@ -47,7 +47,7 @@ oc get namespaces | grep -E '(tsf|konflux|cert-manager|rhbk|rhtpa|openshift-stor
 +
 [NOTE]
 ====
-*Presenter tip:* Count the namespaces out loud. Each one is a production-grade component: Keycloak for identity, RHTAS for signing, RHTPA for vulnerability analysis. Note that Quay and the underlying storage are assumed to be pre-existing in the customer environment -- the `tsf deploy` command handles everything else and wires all components together.
+*Presenter tip:* Count the namespaces out loud. Each one is a production-grade component: Keycloak (`tsf-keycloak`) for identity, RHTAS (`tsf-tas`) for signing, RHTPA (`tsf-tpa`) for vulnerability analysis. 
 ====
 
 == Part 2: The Architecture in Action
@@ -71,7 +71,7 @@ The customer gets SLSA (Supply-chain Levels for Software Artifacts) Level 3 prov
 * *How* it was built (pipeline definition and steps)
 * *What source* was used (git commit SHA)
 
-*Why SLSA Level 3 matters:* it is a requirement for federal software supply chain compliance under Executive Order 14028, and increasingly expected by regulated industries.
+*Why SLSA Level 3 matters:* it is increasingly expected by regulated industries; in the USA, it is a requirement for federal software supply chain compliance under Executive Order 14028.
 
 *Separation of concerns:* ProdSec defines the release policies enforced by Conforma. Platform Engineering manages the standard pipeline templates in Konflux. Developers add a component URL and write application code -- they do not write or maintain pipelines, signing configuration, or release rules.
 
@@ -105,5 +105,5 @@ Log in with your {OCPName} credentials ({openshift_cluster_admin_username} / {op
 +
 [NOTE]
 ====
-*Presenter closing for this module:* "What you are seeing is a complete, production-grade secure software supply chain running on your own {OCPName} cluster. Everything Red Hat used to build this version of OpenShift. In the next section we'll build, sign, and verify an application live."
+*Talking point for closing for this module:* "What you are seeing is a complete, production-grade secure software supply chain running on your own {OCPName} cluster. The same setup that Red Hat used to build this version of OpenShift. In the next section we'll build, sign, and verify an application live."
 ====

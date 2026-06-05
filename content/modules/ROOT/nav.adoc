@@ -15,4 +15,6 @@
 * xref:appendix/a-preparing.adoc[Appendix A: Preparing to install]
 * xref:appendix/b-installing.adoc[Appendix B: Installing TSF]
 * xref:appendix/c-verifying.adoc[Appendix C: Verifying and accessing]
+
+.Troubleshooting
 * xref:appendix/d-troubleshooting.adoc[Appendix D: Troubleshooting]

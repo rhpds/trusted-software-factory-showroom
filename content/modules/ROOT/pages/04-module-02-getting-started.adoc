@@ -27,7 +27,7 @@ The developer does not configure Tekton, Fulcio, Rekor, or Quay separately. They
 
 . Click the *Konflux* tab and navigate to *Namespaces → default-tenant*.
 
-. Click *Create an application*.
+. Click *Create application*.
 
 . Enter the application name:
 +
@@ -35,11 +35,11 @@ The developer does not configure Tekton, Fulcio, Rekor, or Quay separately. They
 sample-application
 ----
 
-. Click *Create*.
+. Click *Create application*.
 +
 [NOTE]
 ====
-*Presenter tip:* "An application in Konflux is not a running service -- it is the grouping that Konflux uses to manage build, test, release, and signing policies. TechCorp might have one application per microservice."
+*Presenter tip:* "An application in Konflux is not necessarily a single service -- it is the grouping that Konflux uses to manage build, test, release, and signing policies. TechCorp might have one application per microservice or it might group several microservices in an application."
 ====
 
 == Part 2: Onboarding a Component from Git
@@ -58,7 +58,7 @@ The pipeline definitions live in the developer's repository -- version-controlle
 
 . From the application page, click *Actions → Add component*.
 
-. Enter the GitLab sample component URL:
+. In the *Git repository url* field, enter the GitLab sample component URL:
 +
 [source,subs="attributes+"]
 ----
@@ -67,28 +67,34 @@ The pipeline definitions live in the developer's repository -- version-controlle
 
 . Toggle *Should the image produced be private* to *off*.
 
-. Select branch `main`.
+. In the *Git reference* field, enter the branch name: `main`.
 
 . Click *Add component*.
 +
 Konflux detects the Dockerfile and selects the appropriate pipeline.
 
-. Click the *GitLab* tab and open *Merge requests* in the `tsf/sample-component-golang` repository.
+. Click the *GitLab* tab. 
+
+. If you are not logged in, log in with the username `root` and the password `{gitlab_root_password}`.
+
+. Click *Projects* and then select the `tsf/sample-component-golang` repository.
+
+. Click *Merge requests* and view the merge request that Konflux created.
++
+*Do not merge the MR yet* -- you need to configure the release settings first. When you condigure the release settings and then merge the MR, the build process can run automatically.
 +
 [NOTE]
 ====
-*Presenter tip:* "See this pull request from Konflux? It added `.tekton/pull-request.yaml` and `.tekton/push.yaml` -- the full pipeline definitions. These are now version-controlled in the application repository. Any change to the build process has to go through code review. That is part of how SLSA Level 3 provenance works -- the build is hermetic and the pipeline definition is immutable for that build.
+*Presenter tip:* "See this merge request from Konflux? It adds two pipeline definitions for Tekton: `.tekton/<project>-pull-request.yaml` and `.tekton/<project>-push.yaml`. When you merge the changes, the definitions become version-controlled in the application repository. Any code review process that you set up for the repository automatically applies to the build process definition. That is part of how SLSA Level 3 provenance works -- the checkpoint in the version control system defines a build and and the pipeline definition is immutable for that build.
 
 Konflux also automatically configured the webhook in GitLab -- future pushes and pull requests will trigger the secure pipeline without any manual setup."
-
-*Do not merge the PR yet* -- you need to configure release first.
 ====
 
 == Part 3: Configuring Release Settings
 
 === Know
 
-Konflux separates *building* from *releasing*. A build produces a signed image and attaches provenance. A release promotes that image to a target environment according to a release plan.
+Konflux separates *building* from *releasing*. A build produces a signed deliverable, in our example a container image, and attaches provenance. A release promotes that image to a target environment according to a release plan.
 
 Release plans define:
 
@@ -96,7 +102,7 @@ Release plans define:
 * What policy checks must pass (signature verification, vulnerability thresholds, SLSA level)
 * Where the image goes (Quay repository, environment namespace)
 
-This separation means security policies are enforced at release time -- not left to individual pipeline authors to remember.
+This separation means security policies are enforced at release time without depending on any manual checks.
 
 === Show
 
@@ -121,15 +127,32 @@ chmod +x setup-release.sh
 ====
 *Presenter tip:* "In production, release plans target specific environments -- dev, staging, prod -- and include approval gates, policy checks, and deployment strategies. For TechCorp, the security team controls the release policy. Developers cannot bypass it."
 ====
+. Optional: view the release settings:
+.. Switch to the *OCP Console* tab. 
+.. In the menu, select *Administration -> CustomResourceDefinitions*.
+.. Search for `ReleasePlan`.
++
+Two custom resource definitions display: `ReleasePlan` and `ReleasePlanAdmission`. These custom resources define release parameters.
+.. Click `ReleasePlanAdmission`.
+.. Select the *Instances* tab and then click the name of the only ReleasePlanAdmission resource that displays (such as `local-release`).
+.. Select the **YAML** tab.
++
+[NOTE]
+====
+*Presenter tip:* "This resource contains the release settings for the application. The settings determine the applications that are included in the release, destination where the release image is pushed, and the Conforma policy that the image must pass in order to be released. The `policy: default` setting refers to the default Conforma policy, which requires that the signature of the image match the Rekor record for the build".
+====
++
+
+For more information about the release settings, refer to link:https://konflux-ci.dev/docs/releasing/[Releasing an application] in the Konflux documentation.
 
 == Part 4: Triggering the Secure Pipeline
 
 === Know
 
-Merging the Konflux pull request starts the full secure pipeline. From this point, Konflux runs automatically:
+Merging the Konflux pull request starts the full secure pipeline. From this point, Konflux automatically executes the following steps:
 
-. Clone source from the exact commit SHA
-. Build the container image in an ephemeral, isolated environment
+. Clone the source from the exact commit SHA
+. Build the deliverable, such as a container image in our example, in an ephemeral, isolated environment
 . Sign the image with RHTAS (Fulcio issues a certificate, Rekor records the signature)
 . Generate an SBOM with all packages and dependencies
 . Scan for vulnerabilities with RHTPA
@@ -142,7 +165,7 @@ The entire process is recorded. Every step, every input, every output -- all sig
 *Talking points:*
 
 * "TechCorp's security team can query Rekor at any time and prove exactly when this image was built, by which pipeline, from which commit."
-* "If a developer tries to build the same image manually and sign it with a different key, the signature will not match the Rekor record. You'd know immediately."
+* "If a developer tries to build the same image manually and sign it with a different key, the signature will not match the Rekor record. The Konflux deployment pipeline includes a Conforma policy, which prevents the deployment of this image."
 
 === Show
 
@@ -152,18 +175,53 @@ The entire process is recorded. Every step, every input, every output -- all sig
 
 . Click the *Konflux* tab and navigate to your application → *Components*.
 +
-The component shows *Build status: In Progress*.
+The component shows *Build running*.
 
-. Click the component to see the live pipeline run.
+. Click the *Activity* tab and then click *Pipeline runs*.
+
+. Click the name of the running pipeline run to see a diagram of steps, showing which steps have completed and which steps are currently being executed.
 +
 [NOTE]
 ====
-*Presenter tip:* "While this runs, walk through the pipeline steps with the customer. Point to the `sign` step -- that is Fulcio issuing a certificate and Rekor recording it. Point to `generate-sbom` -- that is RHTPA cataloging every package. First run takes 5-10 minutes. In a customer environment with a warm image cache it is faster."
+*Presenter tip:* "While the build runs, you can discuss the pipeline steps with the customer; hover the cursor over every step to see a list of tasks in it. Note that the `build-container` step contains `prepare-sboms` and `upload-sbom` tasks which create an SBOM (Software Bill of Materials) and upload it to RHTAP. The Tekton Chains component automatically triggers Fulcio issuing a certificate and Rekor recording it. The first build run takes 5-10 minutes. In a customer environment with a warm image cache it is faster."
 ====
 
-. When complete, the component shows *Build status: Succeeded* with a link to the image in Quay.
+. When the build is complete, the component in the *Components* tab shows *Build completed* and a link to the image in Quay.
 
-== Part 5: Verifying the Signed Image
+== Part 5: Viewing the Automated Release
+
+=== Know
+
+Once the build succeeds and all policy checks pass, Konflux automatically creates a release record. The release captures:
+
+* The exact image reference (including digest)
+* The signature verification result
+* Integration test results
+* The SLSA attestation
+
+This gives TechCorp a single, auditable record for every production artifact -- no manual release notes, no tracking spreadsheets.
+
+=== Show
+
+. In the Konflux UI, navigate to *Applications → sample-application → Releases*.
+
+. Click on the release name to view details.
++
+[NOTE]
+====
+If a release is not available, wait several minutes. After the build completes, the first release can take some time.
+====
+
+. Click the *Pipeline runs* tab
+
+. Click the pipeline run name and then click the *Security* tab to browse Conforma policy validation results.
++
+[NOTE]
+====
+*Presenter tip:* "The Conforma policy engine checked this release against TechCorp's security policies before allowing it to proceed. If the image had failed a vulnerability threshold or the signature was missing, the release would have been blocked here -- automatically, without human intervention."
+====
+
+== Part 6: Verifying the Signed Image
 
 === Know
 
@@ -184,7 +242,18 @@ If any of these checks fail, the image is not from a trusted build. Period.
 
 === Show
 
-. From the Konflux component page, copy the image reference (format: `<quay-url>/<org>/<repo>@sha256:...`).
+. In the Konflux UI, navigate to *Applications → sample-application → Releases*.
+
+. Click on the release name and then click the *Release artifacts* tab.
+
+. From the *URL* column of the table, copy the image reference (format: `<quay-url>/<org>/<repo>@sha256:...`).
++
+====
+[IMPORTANT]
+Select the image reference as text and copy it. Do not use the *Copy link* menu item as the link is different from the reference.
+====
+
+. Switch to the *Terminal* tab.
 
 . Download cosign from the cluster's RHTAS service:
 +
@@ -235,37 +304,11 @@ curl -sSfL -o /tmp/root.json https://$TUF_HOST/root.json
 ----
 REKOR_HOST=$(oc get route -A -l "app.kubernetes.io/part-of=trusted-artifact-signer,app.kubernetes.io/component=rekor-server" -o jsonpath='{.items[0].spec.host}')
 ./cosign verify-attestation $IMAGE \
-  --certificate-identity-regexp '.*' \
-  --certificate-oidc-issuer-regexp '.*' \
-  --rekor-url="https://$REKOR_HOST" \
-  --type=slsaprovenance
+ --certificate-identity-regexp '.*' \
+ --certificate-oidc-issuer-regexp '.*' \
+ --rekor-url="https://$REKOR_HOST" \
+ --type=slsaprovenance | jq -r '.payload' data.json | base64 -d | jq | less
 ----
-
-== Part 6: Viewing the Automated Release
-
-=== Know
-
-Once the build succeeds and all policy checks pass, Konflux automatically creates a release record. The release captures:
-
-* The exact image reference (including digest)
-* The signature verification result
-* Integration test results
-* The SLSA attestation
-
-This gives TechCorp a single, auditable record for every production artifact -- no manual release notes, no tracking spreadsheets.
-
-=== Show
-
-. In the Konflux UI, navigate to *Applications → sample-application → Releases*.
-
-. Click on the release name to view details.
-
-. Show the *Pipeline runs* tab → *Security* tab to browse Conforma policy validation results.
-+
-[NOTE]
-====
-*Presenter tip:* "The Conforma policy engine checked this release against TechCorp's security policies before allowing it to proceed. If the image had failed a vulnerability threshold or the signature was missing, the release would have been blocked here -- automatically, without human intervention."
-====
 
 == Part 7: Software Bill of Materials and Vulnerability Analysis
 
@@ -288,16 +331,48 @@ When a new CVE is published, RHTPA immediately identifies every image in the reg
 * *Username:* {openshift_cluster_admin_username}
 * *Password:* {openshift_cluster_admin_password}
 
-. Navigate to *SBOMs* or *Components* and find `sample-component-golang`.
+. Navigate to *SBOMs*.
 
-. Click the component to show:
-** All packages included in the image
-** Dependencies and versions
-** License information
+. Click an image reference to show the packaging and license information for the image.
+
+. Click the *Packages* tab to show all packages included in the image, their version numbers and licenses.
 
 . Click the *Vulnerabilities* tab to show known CVEs affecting packages in this image.
-+
+
+== Part 8: Introducing a CVE
+
+=== Know
+
+The standard build pipeline provided in TSF includes comprehensive scanning for vulnerabilities. If the scan discovers a known high-severity vulnerability, the build fails and the release does not proceed, preventing potential security incidents.
+
+=== Show
+
+. Click the *GitLab* tab and open `tsf/sample-component-golang` project.
+. In the file list panel, click *Code -> Web IDE* . A new browser window opens with a VSCode user interface. Allow any requested permissions.
+. Open the `demo/cve-onboarding` directory and select both the `go.mod.cve` and `go.sum.cve` files. 
+. Right-click and select *Copy*.
+. Click a file in the main directory.
+. Right-click and select *Paste*.
+. Using the right click and the *Rename* command, rename the `go.mod` and `go.sum` files to `go.mod.safe` and `go.sum.safe`.
+. Using the right click and the *Rename* command, rename the `go.mod.cve` and `go.sum.cve` files in the main directory to `go.mod` and `go.sum`.
+. Click the source control icon and then click *Commit and push to 'main'*. This push automatically triggers a Konflux build.
+. Switch to the *Konflux UI* tab and then navigate to your application → Components.
+. Wait until the build is reported as completed.
+. Click the *Activity* tab and observe that the most recent pipeline displays a status of *Failed*.
+. Click the name of the pipeline to see the steps. Observe that the `sample-application-enterprise-contract` step has failed.
+. Click the `sample-application-enterprise-contract` step and then click *See logs*.
+. Scroll to the bottom of the log output and observe that the step has failed because vulnerabilities were found.
+. Optional: reverse the changes:
+.. On the *GitLab* tab, use the Web IDE to delete the `go.mod` and `go.sum` files and rename the `*.safe` version back to `go.mod` and `go.sum`; commit and push the changes to `main`.
+.. On the *Konflux UI* tab, navigate to your application → Components.
+and then wait until the build is reported as completed.
+
+*Talking points:*
+
+* "If TechCorp's build contains a known critical vulnerability, nothing is deployed - ensuring that no attack surface appears."
+* "When the failed deployment is investigated, the logs list the vulnerability."
+
 [NOTE]
 ====
-*Presenter closing for the demo:* "Every image that leaves this pipeline has this data automatically attached. TechCorp's security team has full visibility into what is in every container running in production -- and when the next Log4Shell drops, they'll know within minutes which workloads are affected. That is what a secure software supply chain looks like in practice."
+*Closing point for the demo:* "Every image that leaves this pipeline has this data automatically attached. TechCorp's security team has full visibility into what is in every container running in production -- and when the next Log4Shell drops, they'll know within minutes which workloads are affected. That is what a secure software supply chain looks like in practice."
 ====

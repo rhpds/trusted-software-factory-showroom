@@ -1,6 +1,4 @@
 = Demo Overview
-:toc:
-:toc-placement: preamble
 
 {TSFName} ({TSFShortName}) shows how Red Hat builds, signs, and ships software internally -- and how your customers can adopt the same standards.
 

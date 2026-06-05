@@ -60,7 +60,31 @@ oc get pods -A --watch
 [[konflux-pipelines]]
 == Konflux pipelines and onboarding
 
-These tips match the hands-on modules: slow or stuck pipeline runs, push failures from a *build*, and missing webhooks.
+These tips match the hands-on modules: login failures, slow or stuck pipeline runs, push failures from a *build*, and missing webhooks.
+
+=== Issue: Component login fails
+
+**Problem:** When you try to log into one of the user interface tabs (*OCP Console*, *Konflux*, *GitLab*) using the credentials provided for the workshop lab, the login fails and an error message displays.
+
+**Solution:** 
+
+. Verify you are using the correct credentials for this specific component. The passwords are different for each component.
+
+. Click the refresh icon next to the name of the tab, and then try to log in again.
+
+=== Issue: Error message on a UI page
+
+**Problem:** When you try to complete any action in one of the user interface tabs (*OCP Console*, *Konflux*, *GitLab*), an error message, such as *Page not found*, displays.
+
+**Solution:** 
+
+. Click the refresh icon next to the name of the tab, and then try to complete the action again. You might need to log into the UI again.
+
+=== Issue: Konflux UI does not show an application
+
+**Problem:** After you create an application and then view releases for it, when you click the *Applications* navigation item in the Konflux UI, no application is visible.
+
+**Solution:** In the Konflux UI, in *Namespace:*, select another namespace, such as `default-tenant`.
 
 === Issue: Pipeline run is slow or appears stuck
 
