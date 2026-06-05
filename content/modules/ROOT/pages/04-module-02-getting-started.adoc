@@ -81,7 +81,7 @@ Konflux detects the Dockerfile and selects the appropriate pipeline.
 
 . Click *Merge requests* and view the merge request that Konflux created.
 +
-*Do not merge the MR yet* -- you need to configure the release settings first. When the release settings are configured and then the MR is merged, the build process can run automatically.
+*Do not merge the MR yet* -- you need to configure the release settings first. When you condigure the release settings and then merge the MR, the build process can run automatically.
 +
 [NOTE]
 ====
@@ -139,20 +139,20 @@ Two custom resource definitions display: `ReleasePlan` and `ReleasePlanAdmission
 +
 [NOTE]
 ====
-*Presenter tip:* "This resource contains the release settings for the project. The settings determine the applications that are included in the release, destination where the release image is pushed, and the Conforma policy that the image must pass in order to be released. The `policy: default` setting refers to the default Conforma policy, which requires that the signature of the image match the Rekor record for the build".
+*Presenter tip:* "This resource contains the release settings for the application. The settings determine the applications that are included in the release, destination where the release image is pushed, and the Conforma policy that the image must pass in order to be released. The `policy: default` setting refers to the default Conforma policy, which requires that the signature of the image match the Rekor record for the build".
 ====
 +
 
-For more information about the release settings, refer to link:https://konflux-ci.dev/docs/releasing/[Releasing an application] in the Knoflux documentation.
+For more information about the release settings, refer to link:https://konflux-ci.dev/docs/releasing/[Releasing an application] in the Konflux documentation.
 
 == Part 4: Triggering the Secure Pipeline
 
 === Know
 
-Merging the Konflux pull request starts the full secure pipeline. From this point, Konflux automatically. A Konflux build executes the following steps:
+Merging the Konflux pull request starts the full secure pipeline. From this point, Konflux automatically executes the following steps:
 
 . Clone the source from the exact commit SHA
-. Build the deliverable, such as a container imagein our example, in an ephemeral, isolated environment
+. Build the deliverable, such as a container image in our example, in an ephemeral, isolated environment
 . Sign the image with RHTAS (Fulcio issues a certificate, Rekor records the signature)
 . Generate an SBOM with all packages and dependencies
 . Scan for vulnerabilities with RHTPA
@@ -165,7 +165,7 @@ The entire process is recorded. Every step, every input, every output -- all sig
 *Talking points:*
 
 * "TechCorp's security team can query Rekor at any time and prove exactly when this image was built, by which pipeline, from which commit."
-* "If a developer tries to build the same image manually and sign it with a different key, the signature will not match the Rekor record. The Konflux deployment pipeline includes a Conforma policy, which  prevents the deployment of this image."
+* "If a developer tries to build the same image manually and sign it with a different key, the signature will not match the Rekor record. The Konflux deployment pipeline includes a Conforma policy, which prevents the deployment of this image."
 
 === Show
 
@@ -183,7 +183,7 @@ The component shows *Build running*.
 +
 [NOTE]
 ====
-*Presenter tip:* "While the build runs, you can discuss the pipeline steps with the customer; hover the cursor over every step to see a list of tasks in  it. Note that the `build-container` step contains `prepare-sboms` and `upload-sbom` tasks which create an SBOM (Software Bill of Materials) and uploads it to RHTAP. The Tekton Chains component automatically triggers Fulcio issuing a certificate and Rekor recording it. The first build run takes 5-10 minutes. In a customer environment with a warm image cache it is faster."
+*Presenter tip:* "While the build runs, you can discuss the pipeline steps with the customer; hover the cursor over every step to see a list of tasks in it. Note that the `build-container` step contains `prepare-sboms` and `upload-sbom` tasks which create an SBOM (Software Bill of Materials) and upload it to RHTAP. The Tekton Chains component automatically triggers Fulcio issuing a certificate and Rekor recording it. The first build run takes 5-10 minutes. In a customer environment with a warm image cache it is faster."
 ====
 
 . When the build is complete, the component in the *Components* tab shows *Build completed* and a link to the image in Quay.
@@ -246,7 +246,7 @@ If any of these checks fail, the image is not from a trusted build. Period.
 
 . Click on the release name and then click the *Release artifacts* tab.
 
-. From the *URL* colimn of the table, copy the image reference (format: `<quay-url>/<org>/<repo>@sha256:...`).
+. From the *URL* column of the table, copy the image reference (format: `<quay-url>/<org>/<repo>@sha256:...`).
 +
 ====
 [IMPORTANT]
@@ -303,8 +303,11 @@ curl -sSfL -o /tmp/root.json https://$TUF_HOST/root.json
 [source,bash,role="execute"]
 ----
 REKOR_HOST=$(oc get route -A -l "app.kubernetes.io/part-of=trusted-artifact-signer,app.kubernetes.io/component=rekor-server" -o jsonpath='{.items[0].spec.host}')
-./cosign verify-attestation $IMAGE   --certificate-identity-regexp '.*' \
- --certificate-oidc-issuer-regexp '.*'   --rekor-url="https://$REKOR_HOST" \   --type=slsaprovenance | jq -r '.payload' data.json | base64 -d | jq | less
+./cosign verify-attestation $IMAGE \
+ --certificate-identity-regexp '.*' \
+ --certificate-oidc-issuer-regexp '.*' \
+ --rekor-url="https://$REKOR_HOST" \
+ --type=slsaprovenance | jq -r '.payload' data.json | base64 -d | jq | less
 ----
 
 == Part 7: Software Bill of Materials and Vulnerability Analysis
@@ -340,7 +343,7 @@ When a new CVE is published, RHTPA immediately identifies every image in the reg
 
 === Know
 
-The standard build pipeline provided in TSF includes comprehensive scanning for vulnerabilities. If the scan discovers a known high-severity vulnerability, the build fails and the release does not procees, preventing potential sexurity incidents.
+The standard build pipeline provided in TSF includes comprehensive scanning for vulnerabilities. If the scan discovers a known high-severity vulnerability, the build fails and the release does not proceed, preventing potential security incidents.
 
 === Show
 
@@ -371,5 +374,5 @@ and then wait until the build is reported as completed.
 
 [NOTE]
 ====
-*Presenter closing for the demo:* "Every image that leaves this pipeline has this data automatically attached. TechCorp's security team has full visibility into what is in every container running in production -- and when the next Log4Shell drops, they'll know within minutes which workloads are affected. That is what a secure software supply chain looks like in practice."
+*Closing point for the demo:* "Every image that leaves this pipeline has this data automatically attached. TechCorp's security team has full visibility into what is in every container running in production -- and when the next Log4Shell drops, they'll know within minutes which workloads are affected. That is what a secure software supply chain looks like in practice."
 ====

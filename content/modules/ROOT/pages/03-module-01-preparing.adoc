@@ -47,7 +47,7 @@ oc get namespaces | grep -E '(tsf|konflux|cert-manager|rhbk|rhtpa|openshift-stor
 +
 [NOTE]
 ====
-*Presenter tip:* Count the namespaces out loud. Each one is a production-grade component: Keycloak (`tsf-keycloak`) for identity, RHTAS (`tsf-tas`) for signing, RHTPA (`tsf-tpa`) for vulnerability analysis. Note that Quay and the underlying storage are assumed to be pre-existing in the customer environment -- the `tsf deploy` command ensures all dependencies are deployed and wires all components together.
+*Presenter tip:* Count the namespaces out loud. Each one is a production-grade component: Keycloak (`tsf-keycloak`) for identity, RHTAS (`tsf-tas`) for signing, RHTPA (`tsf-tpa`) for vulnerability analysis. 
 ====
 
 == Part 2: The Architecture in Action
